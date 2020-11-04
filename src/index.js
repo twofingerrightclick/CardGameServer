@@ -3,8 +3,8 @@ var io = require('socket.io-client')
 
 function init () {
   var socket = io()
-  var opts = {peerOpts: {trickle: false}, autoUpgrade: true}
-  var p2psocket = new Socketiop2p(socket, opts)
+  var opts = {numClients: 1}
+  var p2psocket = new Socketiop2p(opts, socket)
 
   // Elements
   var privateButton = document.getElementById('private')
@@ -89,7 +89,7 @@ function init () {
 
 
 p2psocket.on('private-game-ready-to-play', function () {
-  p2psocket.usePeerConnection = true
+  //p2psocket.usePeerConnection = true
   form.style.visibility='visible';
   console.log('private game ready!')
 

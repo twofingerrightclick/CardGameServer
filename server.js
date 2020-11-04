@@ -12,7 +12,7 @@ server.listen(config.serverInfo.port, function () {
   console.log('Listening on %s', config.serverInfo.port)
 })
 
-io.use(p2pserver)
+//io.use(p2pserver)
 
 var publicRooms = []
 var privateRooms = []
@@ -23,7 +23,7 @@ io.on('connection', function (socket) {
   clients[socket.id] = socket
 
   console.log("new client %s", socket.id)
-  var defaultRoom = {players: [], playerCount: 0, name: socket.id, private: true}
+  var defaultRoom = {players: [], playerCount: 0, name: socket.id+'A', private: true}
   
     socket.leaveAll()
     socket.join(defaultRoom.name)

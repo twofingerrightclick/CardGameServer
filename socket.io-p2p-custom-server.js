@@ -7,7 +7,7 @@ module.exports.Server = p2pSocket
 function p2pSocket (socket, next, room) {
   clients[socket.id] = socket
   if (typeof room === 'object') {
-    var connectedClients = socket.adapter.rooms[room.name]
+    var connectedClients = socket.adapter.rooms[room.name].sockets
   } else {
     var connectedClients = clients
   }
@@ -15,25 +15,28 @@ function p2pSocket (socket, next, room) {
 
   socket.on('disconnect', function () {
     delete clients[socket.id]
-    Object.keys(connectedClients).forEach(function (clientId, i) {
-      var client = clients[clientId]
-      if(client) client.emit('peer-disconnect', {peerId: socket.id})     
-    })
     debug('Client gone (id=' + socket.id + ').')
   })
 
   socket.on('offers', function (data) {
     // send offers to everyone in a given room
-
     Object.keys(connectedClients).forEach(function (clientId, i) {
       var client = clients[clientId]
       if (client && client !== socket) {
         var offerObj = data.offers[i]
-        console.log('socketId %s offers clientID %s', socket.id, clientId)
+        if(offerObj){}
+        else{
+            var offerObj = data.offers[0]
+        }
+                 
         var emittedOffer = {fromPeerId: socket.id, offerId: offerObj.offerId, offer: offerObj.offer}
+
         debug('Emitting offer: %s', JSON.stringify(emittedOffer))
         client.emit('offer', emittedOffer)
-      }
+        console.log('socketId %s offers clientID %s', socket.id, clientId)
+        }
+      
+      
     })
   })
 
