@@ -39,7 +39,7 @@ io.on('connection', function (socket) {
     socket.join(room.name)
     room.playerCount++
     room.players.push(socket)
-    socket.currrentRoom=room
+    socket.currentRoom=room
     p2pserver(socket, null, room)
     socket.emit('game-room-request-complete', {gameRoomName: room.name})
   })
@@ -50,7 +50,7 @@ io.on('connection', function (socket) {
     if (room){
     //socket.leaveAll()
     removePreviousRoom(socket)
-    socket.currrentRoom=room
+    socket.currentRoom=room
     socket.join(room.name)
     room.playerCount++
     room.players.push(socket)
@@ -60,7 +60,7 @@ io.on('connection', function (socket) {
     if (room.playerCount>1 ){
    
     
-    var players = socket.currrentRoom.players
+    var players = socket.currentRoom.players
     players.forEach(function (player) {
       p2pserver(player, null, room)
       player.emit('private-game-ready-to-play', {roomName: room.name})
@@ -75,8 +75,8 @@ io.on('connection', function (socket) {
   socket.on('peer-msg', function (data) {
     console.log('Message from peer: %s', data)
     //socket.rooms.emit('peer-msg', data)
-    if (socket.currrentRoom){
-    var players = socket.currrentRoom.players.filter(function (player) {
+    if (socket.currentRoom){
+    var players = socket.currentRoom.players.filter(function (player) {
       return player !== socket
     })
     players.forEach(function (player) {
@@ -93,8 +93,8 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function (data) {
     //remove room and room name from set.
-    if (typeof socket.currrentRoom !== 'undefined'){
-    var room = socket.currrentRoom
+    if (typeof socket.currentRoom !== 'undefined'){
+    var room = socket.currentRoom
     room.players.splice(room.players.indexOf(socket), 1)
     room.playerCount--
     removeRoom(room)
@@ -167,9 +167,9 @@ function addRoom (room) {
 
 function removePreviousRoom (socket) {
 
-  if(socket.currrentRoom){
+  if(socket.currentRoom){
 
-    removeRoom(socket.currrentRoom)
+    removeRoom(socket.currentRoom)
 
   }
 

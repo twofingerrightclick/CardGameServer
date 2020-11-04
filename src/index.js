@@ -4,12 +4,7 @@ var io = require('socket.io-client')
 function init () {
   var socket = io()
   var opts = {peerOpts: {trickle: false}, autoUpgrade: true}
-  var p2psocket = new Socketiop2p(socket, opts, function () {
-    //privateButton.disabled = false
-    p2psocket.emit('peer-obj', 'Hello there. I am ' + p2psocket.peerId)
-    upgradeMsg.innerHTML = 'WebRTC connection established!'
-    p2psocket.useSockets = false
-  })
+  var p2psocket = new Socketiop2p(socket, opts)
 
   // Elements
   var privateButton = document.getElementById('private')
@@ -34,6 +29,8 @@ function init () {
 
   p2psocket.on('ready', function () {
     console.log('connected via P2P')
+    p2psocket.usePeerConnection = true
+    upgradeMsg.innerHTML = 'WebRTC connection established!'
 
   })
 
