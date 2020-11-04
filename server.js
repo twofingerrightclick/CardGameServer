@@ -4,7 +4,7 @@ var config = require('./config.js')
 var server = require('http').createServer(
   ecstatic({ root: __dirname, handleError: false })
 )
-var p2pserver = require('socket.io-p2p-server').Server
+var p2pserver = require('./socket.io-p2p-custom-server').Server
 var socketIO = require('socket.io')
 var io = socketIO(server)
 

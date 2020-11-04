@@ -52,6 +52,7 @@
     "test": "./node_modules/standard/bin/cmd.js && node tasks/fetch_ice.js && ./node_modules/zuul/bin/zuul -- test/specs/*.js",
     "test-local": "export $(cat .env | xargs) && ./node_modules/zuul/bin/zuul --open --local 8000 -- test/specs/*.js",
     "sauce-test": "export $(cat .env | xargs) && node tasks/fetch_ice.js && ./node_modules/zuul/bin/zuul -- test/specs/*.js",
-    "build": "browserify -s P2P -r ./ | uglifyjs -m > socketiop2p.min.js"
+    "build": "browserify -s P2P -r ./ | uglifyjs -m > socketiop2p.min.js",
+    "start" : "node server.js"
   }
 }

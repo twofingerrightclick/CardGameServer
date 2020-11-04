@@ -17632,7 +17632,7 @@ function init () {
 
 
 p2psocket.on('private-game-ready-to-play', function () {
-  //p2psocket.usePeerConnection = true
+  p2psocket.usePeerConnection = true
   form.style.visibility='visible';
   console.log('private game ready!')
 
