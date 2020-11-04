@@ -3,7 +3,7 @@ var io = require('socket.io-client')
 
 function init () {
   var socket = io()
-  var opts = {peerOpts: {trickle: false}, autoUpgrade: true}
+  var opts = {autoUpgrade: true}
   var p2psocket = new Socketiop2p(socket, opts)
 
   // Elements
@@ -27,7 +27,7 @@ function init () {
     msgList.appendChild(li)
   })
 
-  p2psocket.on('ready', function () {
+  p2psocket.on('upgrade', function () {
     console.log('connected via P2P')
     p2psocket.usePeerConnection = true
     upgradeMsg.innerHTML = 'WebRTC connection established!'
@@ -89,7 +89,7 @@ function init () {
 
 
 p2psocket.on('private-game-ready-to-play', function () {
-  p2psocket.usePeerConnection = true
+  //p2psocket.usePeerConnection = true
   form.style.visibility='visible';
   console.log('private game ready!')
 
