@@ -1,5 +1,5 @@
 window.myDebug = require('debug')
-var Peer = require('simple-peer')
+var Peer = require('./simple-peer-legacy')
 var Emitter = require('component-emitter')
 var parser = require('socket.io-p2p-parser')
 var toArray = require('to-array')

@@ -12,7 +12,7 @@ server.listen(config.serverInfo.port, function () {
   console.log('Listening on %s', config.serverInfo.port)
 })
 
-io.use(p2pserver)
+//io.use(p2pserver)
 
 var publicRooms = []
 var privateRooms = []
@@ -23,18 +23,18 @@ io.on('connection', function (socket) {
   clients[socket.id] = socket
 
   console.log("new client %s", socket.id)
-  var defaultRoom = {players: [], playerCount: 0, name: socket.id, private: true}
+  //var defaultRoom = {players: [], playerCount: 0, name: socket.id, private: true}
   
-    socket.leaveAll()
-    socket.join(defaultRoom.name)
-    defaultRoom.playerCount++
-    defaultRoom.players.push(socket)
-    p2pserver(socket, null, defaultRoom)
+    //socket.leaveAll()
+    //socket.join(defaultRoom.name)
+    //defaultRoom.playerCount++
+    //defaultRoom.players.push(socket)
+    //p2pserver(socket, null, defaultRoom)
 
   socket.on('private-game-room-request', function () {
     
     var room = createRoom(true)
-    socket.leaveAll()
+    //socket.leaveAll()
     removePreviousRoom(socket)
     socket.join(room.name)
     room.playerCount++
@@ -61,8 +61,9 @@ io.on('connection', function (socket) {
    
     
     var players = socket.currentRoom.players
+
     players.forEach(function (player) {
-      p2pserver(player, null, room)
+      
       player.emit('private-game-ready-to-play', {roomName: room.name})
     })
 

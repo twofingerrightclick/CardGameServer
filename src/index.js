@@ -34,6 +34,13 @@ function init () {
 
   })
 
+  p2psocket.on('ready', function () {
+    console.log('connected via P2P')
+    p2psocket.usePeerConnection = true
+    upgradeMsg.innerHTML = 'WebRTC connection established!'
+
+  })
+
   p2psocket.on('peer-file', function (data) {
     var li = document.createElement('li')
     var fileBytes = new Uint8Array(data.file)
