@@ -27,8 +27,8 @@
     "extend.js": "0.0.1",
     "has-binary": "^0.1.5",
     "hat": "0.0.3",
-    "simple-peer": "~5.11.8",
-    "socket.io-p2p-parser": "tomcartwrightuk/socket.io-p2p-parser",
+    "simple-peer": "9.*.*",
+    "socket.io-p2p-parser": "github:tomcartwrightuk/socket.io-p2p-parser",
     "to-array": "^0.1.4",
     "webrtcsupport": "^2.1.2"
   },
@@ -46,13 +46,11 @@
     "standard": "^5.4.1",
     "tape": "~3.0.0",
     "xhr": "^2.2.0",
+    "browserify": "16.5.2",
     "zuul": "~3.8.0"
   },
   "scripts": {
-    "test": "./node_modules/standard/bin/cmd.js && node tasks/fetch_ice.js && ./node_modules/zuul/bin/zuul -- test/specs/*.js",
-    "test-local": "export $(cat .env | xargs) && ./node_modules/zuul/bin/zuul --open --local 8000 -- test/specs/*.js",
-    "sauce-test": "export $(cat .env | xargs) && node tasks/fetch_ice.js && ./node_modules/zuul/bin/zuul -- test/specs/*.js",
-    "build": "browserify -s P2P -r ./ | uglifyjs -m > socketiop2p.min.js",
+    "build" : "browserify ./src/index.js -o bundle.js",
     "start": "node server.js"
   }
 }

@@ -107,6 +107,7 @@ function init () {
 p2psocket.on('disconnected-player', function () {
   p2psocket._peers = {}
   p2pReady=false
+  p2psocket.useSockets=true
 })
 
 p2psocket.on('reconnected-player', function () {

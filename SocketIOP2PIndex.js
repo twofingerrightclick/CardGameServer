@@ -1,5 +1,5 @@
 window.myDebug = require('debug')
-var Peer = require('./simple-peer-legacy')
+var Peer = require('simple-peer')
 var Emitter = require('component-emitter')
 var parser = require('socket.io-p2p-parser')
 var toArray = require('to-array')
@@ -151,7 +151,7 @@ Socketiop2p.prototype.setupPeerEvents = function (peer) {
 
   peer.on('data', function (data) {
     if (this.destroyed) return
-    self.decoder.add(data)
+    self.decoder.add(JSON.parse(data))
   })
 
   peer.on('stream', function (stream) {
@@ -222,7 +222,7 @@ Socketiop2p.prototype._send = function (data) {
   for (var peerId in self._peers) {
     var peer = self._peers[peerId]
     if (peer._channelReady) {
-      peer.send(data)
+      peer.send(JSON.stringify(data))
     }
   }
 }
