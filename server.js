@@ -23,13 +23,6 @@ io.on('connection', function (socket) {
   clients[socket.id] = socket
 
   console.log("new client %s", socket.id)
-  //var defaultRoom = {players: [], playerCount: 0, name: socket.id, private: true}
-  
-    //socket.leaveAll()
-    //socket.join(defaultRoom.name)
-    //defaultRoom.playerCount++
-    //defaultRoom.players.push(socket)
-    //p2pserver(socket, null, defaultRoom)
 
   socket.on('private-game-room-request', function () {
     
@@ -40,7 +33,7 @@ io.on('connection', function (socket) {
     room.playerCount++
     room.players.push(socket)
     socket.currentRoom=room
-    p2pserver(socket, null, room)
+    //p2pserver(socket, null, room)
     socket.emit('game-room-request-complete', {gameRoomName: room.name})
   })
 
@@ -55,21 +48,25 @@ io.on('connection', function (socket) {
     room.playerCount++
     room.players.push(socket)
 
-    p2pserver(socket, null, room)
-
-    if (room.playerCount>1 ){
    
-    
+
+    var numPlayersRequiredForGame=2
+    if (room.playerCount==numPlayersRequiredForGame ){
+   
     var players = socket.currentRoom.players
 
     players.forEach(function (player) {
-      
       player.emit('private-game-ready-to-play', {roomName: room.name})
+      p2pserver(player, null, room)
     })
 
     }
   }
   else socket.emit('unable-to-find-room', 'data')
+
+  //now do signaling after ready to play message
+  //p2pserver(socket, null, room)
+
   })
 
 

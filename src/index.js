@@ -4,7 +4,10 @@ var io = require('socket.io-client')
 function init () {
   var socket = io()
   var opts = {autoUpgrade: true}
-  var p2psocket = new Socketiop2p(socket, opts)
+  var p2psocket = new Socketiop2p(socket, opts, function(){
+    upgradeMsg.innerHTML = 'WebRTC connection established!'
+    p2psocket.useSockets = false
+  })
 
   // Elements
   var privateButton = document.getElementById('private')
@@ -27,19 +30,22 @@ function init () {
     msgList.appendChild(li)
   })
 
-  p2psocket.on('upgrade', function () {
-    console.log('connected via P2P')
-    p2psocket.usePeerConnection = true
-    upgradeMsg.innerHTML = 'WebRTC connection established!'
+
+
+  p2psocket.on('private-game-ready-to-play', function () {
+    
+    
+    form.style.visibility='visible';
+    console.log('private game ready!')
+    
 
   })
 
-  p2psocket.on('ready', function () {
-    console.log('connected via P2P')
-    p2psocket.usePeerConnection = true
-    upgradeMsg.innerHTML = 'WebRTC connection established!'
 
-  })
+
+
+
+
 
   p2psocket.on('peer-file', function (data) {
     var li = document.createElement('li')
@@ -95,16 +101,12 @@ function init () {
 })
 
 
-p2psocket.on('private-game-ready-to-play', function () {
-  //p2psocket.usePeerConnection = true
-  form.style.visibility='visible';
-  console.log('private game ready!')
 
-})
 
 
 p2psocket.on('disconnected-player', function () {
   p2psocket._peers = {}
+  p2pReady=false
 })
 
 p2psocket.on('reconnected-player', function () {
@@ -123,7 +125,7 @@ p2psocket.on('reconnected-player', function () {
   })
 
   p2psocket.on('go-private', function () {
-    goPrivate()
+   // goPrivate()
   })
 
   function goPrivate () {
