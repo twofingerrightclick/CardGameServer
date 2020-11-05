@@ -3,7 +3,7 @@ var io = require('socket.io-client')
 
 function init () {
   var socket = io()
-  var opts = {autoUpgrade: true}
+  var opts = {peerOpts: {trickle: true}, autoUpgrade: true}
   var p2psocket = new Socketiop2p(socket, opts, function(){
     upgradeMsg.innerHTML = 'WebRTC connection established!'
     p2psocket.useSockets = false
