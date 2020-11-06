@@ -1,5 +1,5 @@
 {
-  "name": "socket.io-p2p",
+  "name": "cardgameserver",
   "description": "WebRTC data channel communication with a socket.io-like API",
   "version": "2.2.0",
   "author": {
@@ -27,7 +27,7 @@
     "extend.js": "0.0.1",
     "has-binary": "^0.1.5",
     "hat": "0.0.3",
-    "simple-peer": "9.*.*",
+    "simple-peer": "7.*.*",
     "socket.io-p2p-parser": "github:tomcartwrightuk/socket.io-p2p-parser",
     "to-array": "^0.1.4",
     "webrtcsupport": "^2.1.2"
@@ -50,7 +50,7 @@
     "zuul": "~3.8.0"
   },
   "scripts": {
-    "build" : "browserify ./src/index.js -o bundle.js",
+    "build": "browserify ./src/index.js -o bundle.js",
     "start": "node server.js"
   }
 }

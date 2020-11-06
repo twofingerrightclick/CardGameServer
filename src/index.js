@@ -3,7 +3,19 @@ var io = require('socket.io-client')
 
 function init () {
   var socket = io()
-  var opts = {autoUpgrade: true}
+  var opts = { peerOpts: {
+    config: { 
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' },
+       { urls: 'stun:global.stun.twilio.com:3478?transport=udp' }, 
+       { urls: 'turn:numb.viagenie.ca:19403',
+        username: 'afrostad@ewu.edu',
+        credential: '@mG9K2UaKFHLZ3t'
+       }
+      ]    
+    },
+  }
+     ,autoUpgrade: true}
+
   var p2psocket = new Socketiop2p(socket, opts, function(){
     upgradeMsg.innerHTML = 'WebRTC connection established!'
     p2psocket.useSockets = false
