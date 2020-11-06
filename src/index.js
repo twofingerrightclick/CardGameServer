@@ -6,8 +6,9 @@ function init () {
   var opts = { peerOpts: {
     config: { 
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' },
-       { urls: 'stun:global.stun.twilio.com:3478?transport=udp' }, 
-       { urls: 'turn:numb.viagenie.ca:19403',
+       { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
+       { urls: 'stun:global.stun.twilio.com:3478?transport=tcp' }, 
+       { urls: 'turn:numb.viagenie.ca',
         username: 'afrostad@ewu.edu',
         credential: '@mG9K2UaKFHLZ3t'
        }
