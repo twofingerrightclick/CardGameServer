@@ -8,6 +8,14 @@ var p2pserver = require('./socket.io-p2p-custom-server').Server
 var socketIO = require('socket.io')
 var io = socketIO(server)
 
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID|| 'AC27b517f7a37b55cae9e8939691a1425a' ;
+const authToken = process.env.TWILIO_AUTH_TOKEN|| '83b60ace20384a2b4586fc9d7c0755d7';
+const twilioClient = require('twilio')(accountSid, authToken);
+
+twilioClient.tokens.create().then(token => console.log(token.iceServers));
+
+
 server.listen(config.serverInfo.port, function () {
   console.log('Listening on %s', config.serverInfo.port)
 })
@@ -22,6 +30,8 @@ var clients = {}
 io.on('connection', function (socket) {
   clients[socket.id] = socket
 
+  //socket.emit('token-offer', twilioClient.tokens.create().then(token => console.log(token.iceServers)))
+  twilioClient.tokens.create().then(token => socket.emit('token-offer',token.iceServers))
   console.log("new client %s", socket.id)
 
   socket.on('private-game-room-request', function () {
@@ -56,7 +66,10 @@ io.on('connection', function (socket) {
     var players = socket.currentRoom.players
 
     players.forEach(function (player) {
+
+      
       player.emit('private-game-ready-to-play', {roomName: room.name})
+
       p2pserver(player, null, room)
     })
 

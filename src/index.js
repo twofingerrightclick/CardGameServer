@@ -3,24 +3,22 @@ var io = require('socket.io-client')
 
 function init () {
   var socket = io()
-  var opts = { peerOpts: {
-    config: { 
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' },
-       { urls: 'stun:global.stun.twilio.com:3478?transport=udp' },
-       { urls: 'stun:global.stun.twilio.com:3478?transport=tcp' }, 
-       { urls: 'turn:numb.viagenie.ca',
-        username: 'afrostad@ewu.edu',
-        credential: '@mG9K2UaKFHLZ3t'
-       }
-      ]    
-    },
-  }
-     ,autoUpgrade: true}
+  
+ 
 
-  var p2psocket = new Socketiop2p(socket, opts, function(){
-    upgradeMsg.innerHTML = 'WebRTC connection established!'
-    p2psocket.useSockets = false
-  })
+    var p2psocket= socket.on('token-offer', function(iceServers){ 
+      
+      var opts = { 
+        peerOpts: {config: iceServers, trickle: false, initiator: false},
+        autoUpgrade: true}
+      
+      return new Socketiop2p(socket, opts, function(){
+      upgradeMsg.innerHTML = 'WebRTC connection established!'
+      p2psocket.useSockets = false
+    })
+    })
+
+  
 
   // Elements
   var privateButton = document.getElementById('private')
@@ -36,6 +34,7 @@ function init () {
   var gameRoomNameInput = document.getElementById('game-room-name-input')
   var joinRoomButton = document.getElementById('join-room-button')
   
+
 
   p2psocket.on('peer-msg', function (data) {
     var li = document.createElement('li')
@@ -100,6 +99,8 @@ function init () {
 
   gameCodeButton.addEventListener('click', function () {
       p2psocket.emit('private-game-room-request')
+      //p2psocket.peerOpts.initiator=true;
+      
   })
 
   p2psocket.on('game-room-request-complete', function (data) {

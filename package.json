@@ -30,7 +30,8 @@
     "simple-peer": "7.*.*",
     "socket.io-p2p-parser": "github:tomcartwrightuk/socket.io-p2p-parser",
     "to-array": "^0.1.4",
-    "webrtcsupport": "^2.1.2"
+    "webrtcsupport": "^2.1.2",
+    "twilio": "3.51.*"
   },
   "devDependencies": {
     "concat-stream": "^1.5.1",
