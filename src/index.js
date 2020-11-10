@@ -9,16 +9,21 @@ function init () {
     var p2psocket= socket.on('token-offer', function(iceServers){ 
       
       var opts = { 
-        //peerOpts: {config: iceServers, trickle: true, initiator: false},
-        peerOpts: {trickle: true, initiator: false},
+        peerOpts: {config: iceServers, trickle: true, initiator: false},
+        //peerOpts: {trickle: true, initiator: false},
         autoUpgrade: true}
       
-      return new Socketiop2p(socket, opts, function(){
+      var p2psocket= new Socketiop2p(socket, opts, function(){
+        var upgradeMsg = document.getElementById('upgrade-msg')
       upgradeMsg.innerHTML = 'WebRTC connection established!'
       p2psocket.useSockets = false
-      p2psocket.usePeerConnection = true;
+      console.log("usingp2p")
+      //p2psocket.usePeerConnection = true;
     })
+    useP2pSocket(p2psocket)
     })
+
+    function useP2pSocket(p2psocket){
 
   
 
@@ -160,6 +165,8 @@ p2psocket.on('reconnected-player', function () {
     upgradeMsg.innerHTML = 'WebRTC connection established!'
     privateButton.disabled = true
   }
+
+}
 }
 
 document.addEventListener('DOMContentLoaded', init, false)
