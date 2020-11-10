@@ -34,9 +34,9 @@ io.on('connection', function (socket) {
   twilioClient.tokens.create().then(token => socket.emit('token-offer',token.iceServers))
   console.log("new client %s", socket.id)
 
-  socket.on('private-game-room-request', function () {
+  socket.on('private-game-room-request', function (data) {
     
-    var room = createRoom(true)
+    var room = createRoom({private:true, numPlayersRequiredForGame: data.numPlayersRequiredForGame, gameType:data.gameType})
     //socket.leaveAll()
     removePreviousRoom(socket)
     socket.join(room.name)
@@ -46,6 +46,32 @@ io.on('connection', function (socket) {
     //p2pserver(socket, null, room)
     socket.emit('game-room-request-complete', {gameRoomName: room.name})
   })
+
+  socket.on('public-game-room-request', function (data) {
+    
+    var room = findPublicRoom(data.numPlayersRequiredForGame, data.gameType)
+    //socket.leaveAll()
+    removePreviousRoom(socket)
+    socket.join(room.name)
+    room.playerCount++
+    room.players.push(socket)
+    socket.currentRoom=room
+    //p2pserver(socket, null, room)
+    socket.emit('game-room-request-complete', {gameRoomName: room.name})
+    if (room.playerCount===data.numPlayersRequiredForGame){
+
+      var players = socket.currentRoom.players
+
+    players.forEach(function (player) {
+      p2pserver(player, null, room)      
+      player.emit('game-ready-to-play', {msg: 'public room '+room.name})
+      
+      
+    })
+
+    }
+  })
+
 
   socket.on('join-private-game-room', function (data) {
     
@@ -65,12 +91,11 @@ io.on('connection', function (socket) {
    
     var players = socket.currentRoom.players
 
-    players.forEach(function (player) {
+    players.forEach(function (player) {  
+      p2pserver(player, null, room)      
+      player.emit('game-ready-to-play', {msg: 'private room '+room.name, gameType: room.gameType})
 
-      
-      player.emit('private-game-ready-to-play', {roomName: room.name})
-
-      p2pserver(player, null, room)
+     
     })
 
     }
@@ -107,7 +132,7 @@ io.on('connection', function (socket) {
     if (typeof socket.currentRoom !== 'undefined'){
     var room = socket.currentRoom
     room.players.splice(room.players.indexOf(socket), 1)
-    room.playerCount--
+    
     removeRoom(room)
     io.to(room.name).emit('disconnected-player')
     }
@@ -116,14 +141,14 @@ io.on('connection', function (socket) {
 
 })
 
-function createRoom (private) {
+function createRoom (data) {
     var name ='';
   do {
    name =  generateRoomName()
   } while (usedRoomNames.has(name))
   usedRoomNames.add(name);
 
-    var room = {players: [], playerCount: 0, name: name, private: private}
+    var room = {players: [], playerCount: 0, name: name, private: data.private, gameType: data.gameType, numPlayersRequiredForGame:data.numPlayersRequiredForGame}
     addRoom(room)
   
   return room;
@@ -139,8 +164,22 @@ function generateRoomName (){
   return result;
 }
 
-function findPublicRoom () {
-  return publicRooms.filter(function(room) { return room.playerCount === 1 })[0];
+function findPublicRoom (requiredNumPlayers, gameType) {
+  if(gameType){
+  var availiblePublicRoom = publicRooms.filter(function(room) { return (room.playerCount < requiredNumPlayers && room.gameType===gameType)})[0];
+  if(availiblePublicRoom){
+    return availiblePublicRoom
+  }
+  else{
+    availiblePublicRoom = createRoom({private:false, gameType:gameType, numPlayersRequiredForGame:requiredNumPlayers});
+    addRoom(availiblePublicRoom)
+  }
+  return availiblePublicRoom
+}
+else{
+  console.error("gameType wasn't defined when trying to join a public room");
+  socket.emit('error', 'gameType was defined - cannot find public room')
+}
 }
 
 function findPrivateRoom (roomName) {
@@ -148,19 +187,33 @@ function findPrivateRoom (roomName) {
 }
 
 function removeRoom (room) {
+
+
+  var indexOfRoom = publicRooms.indexOf(room)
   room.playerCount--
+
+  
+  
   if (room.private ===true ) {
+    indexOfRoom = privateRooms.indexOf(room)
 
   if (room.playerCount === 0){ 
     privateRooms.splice(privateRooms.indexOf(room), 1)
     usedRoomNames.delete(room.name)
+  }
+  else{
+    privateRooms[privateRooms.indexOf(room)].playerCount=room.playerCount
   }
  
   }
 
   else if (room.private === false){
   if (room.playerCount === 0) publicRooms.splice(publicRooms.indexOf(room), 1)
+  
+  else{
+    publicRooms[publicRooms.indexOf(room)].playerCount=room.playerCount
   }
+}
 
   else console.error(" removeRoom() Room wasn't removed as its private property wasn't set");
 }

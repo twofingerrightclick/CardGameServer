@@ -9,12 +9,14 @@ function init () {
     var p2psocket= socket.on('token-offer', function(iceServers){ 
       
       var opts = { 
-        peerOpts: {config: iceServers, trickle: false, initiator: false},
+        //peerOpts: {config: iceServers, trickle: true, initiator: false},
+        peerOpts: {trickle: true, initiator: false},
         autoUpgrade: true}
       
       return new Socketiop2p(socket, opts, function(){
       upgradeMsg.innerHTML = 'WebRTC connection established!'
       p2psocket.useSockets = false
+      p2psocket.usePeerConnection = true;
     })
     })
 
@@ -27,6 +29,8 @@ function init () {
   var boxFile = document.getElementById('msg-file')
   var msgList = document.getElementById('msg-list')
   var upgradeMsg = document.getElementById('upgrade-msg')
+
+  var joinPublicButton = document.getElementById('join-public-button')
 
   var gameCodeButton = document.getElementById('game-code-button')
   var gameCodeField = document.getElementById('game-code-field')
@@ -44,11 +48,11 @@ function init () {
 
 
 
-  p2psocket.on('private-game-ready-to-play', function () {
+  p2psocket.on('game-ready-to-play', function (data) {
     
     
     form.style.visibility='visible';
-    console.log('private game ready!')
+    console.log(data.msg)
     
 
   })
@@ -98,7 +102,7 @@ function init () {
 // Game code 
 
   gameCodeButton.addEventListener('click', function () {
-      p2psocket.emit('private-game-room-request')
+      p2psocket.emit('private-game-room-request', {numPlayersRequiredForGame:2, gameType: 'fives'})
       //p2psocket.peerOpts.initiator=true;
       
   })
@@ -107,6 +111,8 @@ function init () {
     gameCodeField.textContent = data.gameRoomName
   })
 
+
+ 
 
   //click join by name
   joinRoomButton.addEventListener('click', function () {
@@ -119,9 +125,9 @@ function init () {
 
 
 p2psocket.on('disconnected-player', function () {
-  p2psocket._peers = {}
   p2pReady=false
   p2psocket.useSockets=true
+  p2psocket.usePeerConnection = false;
 })
 
 p2psocket.on('reconnected-player', function () {
@@ -138,6 +144,12 @@ p2psocket.on('reconnected-player', function () {
     goPrivate()
     p2psocket.emit('go-private', true)
   })
+
+  joinPublicButton.addEventListener('click', function (e) {
+    p2psocket.emit('public-game-room-request', {numPlayersRequiredForGame:2, gameType: 'fives'})
+   
+  })
+
 
   p2psocket.on('go-private', function () {
    // goPrivate()
