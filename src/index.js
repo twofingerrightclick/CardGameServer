@@ -6,10 +6,10 @@ function init () {
   
  
 
-    var p2psocket= socket.on('token-offer', function(iceServers){ 
+   socket.on('token-offer', function(iceServers){ 
       
       var opts = { 
-        peerOpts: {config: iceServers, trickle: true, initiator: false},
+        peerOpts: {config: iceServers, trickle: true},
         //peerOpts: {trickle: true, initiator: false},
         autoUpgrade: true}
       
@@ -18,7 +18,7 @@ function init () {
       upgradeMsg.innerHTML = 'WebRTC connection established!'
       p2psocket.useSockets = false
       console.log("usingp2p")
-      //p2psocket.usePeerConnection = true;
+      p2psocket.usePeerConnection = true;
     })
     useP2pSocket(p2psocket)
     })
