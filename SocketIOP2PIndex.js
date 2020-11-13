@@ -128,7 +128,7 @@ function Socketiop2p (socket, opts, cb) {
 
   self.on('peer_ready', function (peer) {
     self.readyPeers++
-    if (self.readyPeers >= self.numConnectedClients && !self.ready) {
+    if (self.readyPeers >= self.numConnectedClients && !self.ready) { 
       self.ready = true
       self.emit('upgrade')
     }

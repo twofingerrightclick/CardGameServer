@@ -2,7 +2,7 @@ var ecstatic = require('ecstatic')
 var hat = require('hat')
 var config = require('./config.js')
 var server = require('http').createServer(
-  ecstatic({ root: __dirname, handleError: false })
+  ecstatic({ root: __dirname+'/public', handleError: false })
 )
 var p2pserver = require('./socket.io-p2p-custom-server').Server
 var socketIO = require('socket.io')
@@ -56,14 +56,16 @@ io.on('connection', function (socket) {
     room.playerCount++
     room.players.push(socket)
     socket.currentRoom=room
-    //p2pserver(socket, null, room)
+   
+    
     socket.emit('game-room-request-complete', {gameRoomName: room.name})
+    p2pserver(socket, null, room)  
     if (room.playerCount===data.numPlayersRequiredForGame){
 
       var players = socket.currentRoom.players
 
     players.forEach(function (player) {
-      p2pserver(player, null, room)      
+      //p2pserver(player, null, room)    
       player.emit('game-ready-to-play', {msg: 'public room '+room.name})
       
       
