@@ -1,12 +1,14 @@
-var ecstatic = require('ecstatic')
+
 var hat = require('hat')
 var config = require('./config.js')
-var server = require('http').createServer(
-  ecstatic({ root: __dirname+'/public', handleError: false })
-)
+var express = require('express')
+var app = express()
+var server = require('http').Server(app)
+app.use(express.static(__dirname+'/public'))
+
 var p2pserver = require('./socket.io-p2p-custom-server').Server
-var socketIO = require('socket.io')
-var io = socketIO(server)
+var io = require('socket.io')(server)
+
 
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID|| 'AC27b517f7a37b55cae9e8939691a1425a' ;
@@ -16,7 +18,7 @@ const twilioClient = require('twilio')(accountSid, authToken);
 twilioClient.tokens.create().then(token => console.log(token.iceServers));
 
 
-server.listen(config.serverInfo.port, function () {
+server.listen(config.serverInfo.port,'10.42.0.145', function () {
   console.log('Listening on %s', config.serverInfo.port)
 })
 
@@ -29,10 +31,13 @@ var clients = {}
 
 io.on('connection', function (socket) {
   clients[socket.id] = socket
-
-  //socket.emit('token-offer', twilioClient.tokens.create().then(token => console.log(token.iceServers)))
-  twilioClient.tokens.create().then(token => socket.emit('token-offer',token.iceServers))
   console.log("new client %s", socket.id)
+  //socket.emit('token-offer', twilioClient.tokens.create().then(token => console.log(token.iceServers)))
+  
+  twilioClient.tokens.create().then(token => socket.emit('token-offer',token.iceServers))
+  
+  
+  //console.log("new client %s", socket.id)
 
   socket.on('private-game-room-request', function (data) {
     
@@ -59,7 +64,7 @@ io.on('connection', function (socket) {
    
     
     socket.emit('game-room-request-complete', {gameRoomName: room.name})
-    p2pserver(socket, null, room)  
+    //p2pserver(socket, null, room)  
     if (room.playerCount===data.numPlayersRequiredForGame){
 
       var players = socket.currentRoom.players
@@ -94,7 +99,7 @@ io.on('connection', function (socket) {
     var players = socket.currentRoom.players
 
     players.forEach(function (player) {  
-      p2pserver(player, null, room)      
+      //p2pserver(player, null, room)      
       player.emit('game-ready-to-play', {msg: 'private room '+room.name, gameType: room.gameType})
 
      
@@ -158,7 +163,7 @@ function createRoom (data) {
 
 function generateRoomName (){
   var length = 5;
-  var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var randomChars = 'ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz023456789';
   var result = '';
   for ( var i = 0; i < length; i++ ) {
       result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));
