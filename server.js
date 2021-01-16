@@ -1,6 +1,7 @@
 
 var hat = require('hat')
 var config = require('./config.js')
+var event = require('./events.js').events
 var express = require('express')
 var app = express()
 var server = require('http').Server(app)
@@ -34,27 +35,28 @@ io.on('connection', function (socket) {
   console.log("new client %s", socket.id)
   //socket.emit('token-offer', twilioClient.tokens.create().then(token => console.log(token.iceServers)))
   
-  twilioClient.tokens.create().then(token => socket.emit('token-offer',token.iceServers))
+  twilioClient.tokens.create().then(token => socket.emit(event.turnServerTokenOffer,token.iceServers))
   
   
   //console.log("new client %s", socket.id)
 
-  socket.on('private-game-room-request', function (data) {
+  socket.on(event.createPrivateGameRoom, function (data) {
     
-    var room = createRoom({private:true, numPlayersRequiredForGame: data.numPlayersRequiredForGame, gameType:data.gameType})
+    var room = createRoom({private:true, minPlayersRequiredForGame: data.minNumberPlayers, maxPlayersRequiredForGame: data.maxNumberPlayers, gameType:data.gameType})
     //socket.leaveAll()
     removePreviousRoom(socket)
     socket.join(room.name)
     room.playerCount++
     room.players.push(socket)
+    room.intitiator=socket
     socket.currentRoom=room
     //p2pserver(socket, null, room)
-    socket.emit('game-room-request-complete', {gameRoomName: room.name})
+    socket.emit(event.privategGameRoomRequestComplete, {gameRoomName: room.name, intitiator: true})
   })
 
   socket.on('public-game-room-request', function (data) {
     
-    var room = findPublicRoom(data.numPlayersRequiredForGame, data.gameType)
+    var room = findPublicRoom(data.minPlayersRequiredForGame, data.gameType)
     //socket.leaveAll()
     removePreviousRoom(socket)
     socket.join(room.name)
@@ -63,26 +65,30 @@ io.on('connection', function (socket) {
     socket.currentRoom=room
    
     
-    socket.emit('game-room-request-complete', {gameRoomName: room.name})
+    socket.emit(event.publicGameRoomRequestComplete, {gameRoomName: room.name})
     //p2pserver(socket, null, room)  
-    if (room.playerCount===data.numPlayersRequiredForGame){
+    if (room.playerCount===data.minPlayersRequiredForGame){
 
-      var players = socket.currentRoom.players
-
-    players.forEach(function (player) {
       //p2pserver(player, null, room)    
-      player.emit('game-ready-to-play', {msg: 'public room '+room.name})
+    io.to(room.name).emit(event.startGame, {msg: 'public room'+room.name})
       
-      
-    })
 
     }
   })
 
 
-  socket.on('join-private-game-room', function (data) {
+  socket.on(event.startGame, function (data) { 
+    //p2pserver(socket, null, room)  
+    io.to(socket.currentRoom.name).emit(event.startGame)
+
+    
+  })
+
+
+  socket.on(event.joinPrivateGameRoom, function (data) {
     
     var room = findPrivateRoom(data.roomName)
+    socket.playerName=filterPlayerName(data.playerName)
     if (room){
     //socket.leaveAll()
     removePreviousRoom(socket)
@@ -91,26 +97,18 @@ io.on('connection', function (socket) {
     room.playerCount++
     room.players.push(socket)
 
-   
+    var minPlayersRequiredForGame=2
 
-    var numPlayersRequiredForGame=2
-    if (room.playerCount==numPlayersRequiredForGame ){
-   
-    var players = socket.currentRoom.players
-
-    players.forEach(function (player) {  
+    socket.emit(event.playerJoined, {playerName: room.intitiator.playerName}) //tell the new player the intiators name 
       //p2pserver(player, null, room)      
-      player.emit('game-ready-to-play', {msg: 'private room '+room.name, gameType: room.gameType})
-
-     
-    })
-
-    }
+    io.to(room.name).emit(event.playerJoined, {playerName: socket.playerName, numPlayers: room.playerCount})
+  
+    if (room.playerCount==minPlayersRequiredForGame){
+      room.intitiator.emit(event.gameReadyToPlay)
   }
-  else socket.emit('unable-to-find-room', 'data')
+  }
+  else socket.emit(event.unableToFindRoom)
 
-  //now do signaling after ready to play message
-  //p2pserver(socket, null, room)
 
   })
 
@@ -148,6 +146,16 @@ io.on('connection', function (socket) {
 
 })
 
+function filterPlayerName(name){
+
+  if(name){
+  if(name.length>13) return name.substr(0,13)
+  }
+  
+  return name
+
+}
+
 function createRoom (data) {
     var name ='';
   do {
@@ -155,7 +163,7 @@ function createRoom (data) {
   } while (usedRoomNames.has(name))
   usedRoomNames.add(name);
 
-    var room = {players: [], playerCount: 0, name: name, private: data.private, gameType: data.gameType, numPlayersRequiredForGame:data.numPlayersRequiredForGame}
+    var room = {players: [], playerCount: 0, name: name, private: data.private, gameType: data.gameType, minPlayersRequiredForGame:data.minPlayersRequiredForGame, maxPlayersRequiredForGame:data.maxPlayersRequiredForGame}
     addRoom(room)
   
   return room;
@@ -178,7 +186,7 @@ function findPublicRoom (requiredNumPlayers, gameType) {
     return availiblePublicRoom
   }
   else{
-    availiblePublicRoom = createRoom({private:false, gameType:gameType, numPlayersRequiredForGame:requiredNumPlayers});
+    availiblePublicRoom = createRoom({private:false, gameType:gameType, minPlayersRequiredForGame:requiredNumPlayers});
     addRoom(availiblePublicRoom)
   }
   return availiblePublicRoom

@@ -1,5 +1,6 @@
 var Socketiop2p = require('../SocketIOP2PIndex')
 var io = require('socket.io-client')
+var event = require('../events').events
 
 function init () {
   var socket = io()
@@ -53,7 +54,7 @@ function init () {
 
 
 
-  p2psocket.on('game-ready-to-play', function (data) {
+  p2psocket.on(event.startGame, function (data) {
     
     
     form.style.visibility='visible';
