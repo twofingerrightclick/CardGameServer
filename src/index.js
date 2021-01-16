@@ -5,7 +5,7 @@ var event = require('../events').events
 function init () {
   var socket = io()
   
- 
+  useP2pSocket(socket)
 
    socket.on('token-offer', function(iceServers){ 
       
@@ -14,14 +14,8 @@ function init () {
         //peerOpts: {trickle: true, initiator: false},
         autoUpgrade: true}
       
-      var p2psocket= new Socketiop2p(socket, opts, function(){
-        var upgradeMsg = document.getElementById('upgrade-msg')
-      upgradeMsg.innerHTML = 'WebRTC connection established!'
-      p2psocket.useSockets = false
-      console.log("usingp2p")
-      p2psocket.usePeerConnection = true;
-    })
-    useP2pSocket(p2psocket)
+      
+    
     })
 
     function useP2pSocket(p2psocket){
@@ -152,7 +146,7 @@ p2psocket.on('reconnected-player', function () {
   })
 
   joinPublicButton.addEventListener('click', function (e) {
-    p2psocket.emit('public-game-room-request', {numPlayersRequiredForGame:2, gameType: 'fives'})
+    p2psocket.emit("public-game-room-request", {numPlayersRequiredForGame:2, gameType: 'fives'})
    
   })
 

@@ -3,6 +3,7 @@ var hat = require('hat')
 var config = require('./config.js')
 var event = require('./events.js').events
 var express = require('express')
+const { emit } = require('process')
 var app = express()
 var server = require('http').Server(app)
 app.use(express.static(__dirname+'/public'))
@@ -11,15 +12,14 @@ var p2pserver = require('./socket.io-p2p-custom-server').Server
 var io = require('socket.io')(server)
 
 
+//for p2p negotiation
+//const accountSid = process.env.TWILIO_ACCOUNT_SID|| 'AC27b517f7a37b55cae9e8939691a1425a' ; invalid tokens
+//const authToken = process.env.TWILIO_AUTH_TOKEN|| '83b60ace20384a2b4586fc9d7c0755d7'; //invalid tokens
+//const twilioClient = require('twilio')(accountSid, authToken);
+//twilioClient.tokens.create().then(token => console.log(token.iceServers));
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID|| 'AC27b517f7a37b55cae9e8939691a1425a' ;
-const authToken = process.env.TWILIO_AUTH_TOKEN|| '83b60ace20384a2b4586fc9d7c0755d7';
-const twilioClient = require('twilio')(accountSid, authToken);
 
-twilioClient.tokens.create().then(token => console.log(token.iceServers));
-
-
-server.listen(config.serverInfo.port,'10.42.0.145', function () {
+server.listen(config.serverInfo.port, function () {
   console.log('Listening on %s', config.serverInfo.port)
 })
 
@@ -29,13 +29,15 @@ var publicRooms = []
 var privateRooms = []
 var usedRoomNames = new Set(); 
 var clients = {}
+var numActivePublicPlayers=0;
 
 io.on('connection', function (socket) {
   clients[socket.id] = socket
   console.log("new client %s", socket.id)
   //socket.emit('token-offer', twilioClient.tokens.create().then(token => console.log(token.iceServers)))
   
-  twilioClient.tokens.create().then(token => socket.emit(event.turnServerTokenOffer,token.iceServers))
+  //for p2p
+  //twilioClient.tokens.create().then(token => socket.emit(event.turnServerTokenOffer,token.iceServers))
   
   
   //console.log("new client %s", socket.id)
@@ -53,18 +55,21 @@ io.on('connection', function (socket) {
     //p2pserver(socket, null, room)
     socket.emit(event.privategGameRoomRequestComplete, {gameRoomName: room.name, intitiator: true})
   })
-
+  
+ 
   socket.on('public-game-room-request', function (data) {
     
     var room = findPublicRoom(data.minPlayersRequiredForGame, data.gameType)
     //socket.leaveAll()
+    numActivePublicPlayers++;
+    socket.emit(event.numActivePublicPlayers, {numPlayers: numActivePublicPlayers})//emit to everyone before joining a room
     removePreviousRoom(socket)
     socket.join(room.name)
     room.playerCount++
     room.players.push(socket)
     socket.currentRoom=room
    
-    
+   
     socket.emit(event.publicGameRoomRequestComplete, {gameRoomName: room.name})
     //p2pserver(socket, null, room)  
     if (room.playerCount===data.minPlayersRequiredForGame){
@@ -136,12 +141,35 @@ io.on('connection', function (socket) {
     //remove room and room name from set.
     if (typeof socket.currentRoom !== 'undefined'){
     var room = socket.currentRoom
+    if(!room.private){
+      numActivePublicPlayers--; 
+      socket.emit(event.numActivePublicPlayers,{numPlayers: numActivePublicPlayers})
+    }
+
     room.players.splice(room.players.indexOf(socket), 1)
     
     removeRoom(room)
     io.to(room.name).emit('disconnected-player')
     }
   })
+
+  socket.on(event.publicGameWaitingRoomPlayerLeft, function (data) {
+    //remove room and room name from set.
+    if (typeof socket.currentRoom !== 'undefined'){
+    var room = socket.currentRoom
+    if(!room.private){
+      numActivePublicPlayers--; 
+      socket.emit(event.numActivePublicPlayers,{numPlayers: numActivePublicPlayers})
+    }
+
+    room.players.splice(room.players.indexOf(socket), 1)
+    
+    removeRoom(room)
+    io.to(room.name).emit('disconnected-player')
+    }
+  })
+
+  
 
 
 })
