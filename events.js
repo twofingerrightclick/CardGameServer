@@ -20,7 +20,11 @@ module.exports= {
         publicGameRoomRequest : "public-game-room-request",
         publicGameReadyToPlay : "public-game-ready-to-play",
         getNumActivePlayers : "get-num-active-public-players",
-        numActivePublicPlayers : "num-active-public-players"
+        numActivePublicPlayers : "num-active-public-players",
+
+
+        //game events
+        gameData: 'game-data'
     }    
 
 }

@@ -85,8 +85,21 @@ io.on('connection', function (socket) {
   socket.on(event.startGame, function (data) { 
     //p2pserver(socket, null, room)  
     io.to(socket.currentRoom.name).emit(event.startGame)
+  
+  })
 
+
+  socket.on(event.gameData, function (data) { 
     
+    //send to other players
+    if (socket.currentRoom){
+      var players = socket.currentRoom.players.filter(function (player) {
+        return player !== socket
+      })
+      players.forEach(function (player) {
+        player.emit(event.gameData, data)
+      })
+    }
   })
 
 
@@ -141,19 +154,19 @@ io.on('connection', function (socket) {
     //remove room and room name from set.
     if (typeof socket.currentRoom !== 'undefined'){
     var room = socket.currentRoom
-    if(!room.private){
+    if(room.private===false){
       numActivePublicPlayers--; 
-      socket.emit(event.numActivePublicPlayers,{numPlayers: numActivePublicPlayers})
+      //socket.emit(event.numActivePublicPlayers,{numPlayers: numActivePublicPlayers})
     }
 
-    room.players.splice(room.players.indexOf(socket), 1)
+    room.players.splice(room.players.indexOf(socket), 1) //remove player from room
     
     removeRoom(room)
     io.to(room.name).emit('disconnected-player')
     }
   })
 
-  socket.on(event.publicGameWaitingRoomPlayerLeft, function (data) {
+  socket.on(event.publicGameWaitingRoomPlayerLeft, function (data) { //when a user presses the back button in the waiting room
     //remove room and room name from set.
     if (typeof socket.currentRoom !== 'undefined'){
     var room = socket.currentRoom
@@ -232,30 +245,32 @@ function findPrivateRoom (roomName) {
 function removeRoom (room) {
 
 
-  var indexOfRoom = publicRooms.indexOf(room)
-  room.playerCount--
+  var indexOfRoom;
+  room.playerCount--;
 
   
   
   if (room.private ===true ) {
     indexOfRoom = privateRooms.indexOf(room)
 
-  if (room.playerCount === 0){ 
-    privateRooms.splice(privateRooms.indexOf(room), 1)
-    usedRoomNames.delete(room.name)
-  }
-  else{
-    privateRooms[privateRooms.indexOf(room)].playerCount=room.playerCount
-  }
+    if (room.playerCount === 0){ 
+      privateRooms.splice(indexOfRoom,1)
+      usedRoomNames.delete(room.name)
+    }
+    else{
+      privateRooms[indexOfRoom].playerCount=room.playerCount;
+    }
  
   }
 
   else if (room.private === false){
-  if (room.playerCount === 0) publicRooms.splice(publicRooms.indexOf(room), 1)
-  
-  else{
-    publicRooms[publicRooms.indexOf(room)].playerCount=room.playerCount
-  }
+    indexOfRoom= publicRooms.indexOf(room)
+    if (room.playerCount === 0) {
+      publicRooms.splice(indexOfRoom,1);
+    }
+    else{
+      publicRooms[indexOfRoom].playerCount=room.playerCount
+    }
 }
 
   else console.error(" removeRoom() Room wasn't removed as its private property wasn't set");
