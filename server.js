@@ -43,8 +43,8 @@ io.on('connection', function (socket) {
   
   //console.log("new client %s", socket.id)
 
-  publicGame.addPublicEvents(socket);
-  privateGame.addPrivateGameEvents(socket);
+  publicGame.addPublicEvents(socket, io);
+  privateGame.addPrivateGameEvents(socket, io);
 
 
   socket.on(event.startGame, function (data) { 

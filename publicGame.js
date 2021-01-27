@@ -2,7 +2,7 @@ const ServerVariables  = require("./ServerVariables").ServerVariables;
 var event = require('./events.js').events
 const rooms = require ("./rooms");
 
-function addPublicEvents(socket){
+function addPublicEvents(socket,io){
 
     socket.on('public-game-room-request', function (data) {
     
