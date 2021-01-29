@@ -66,7 +66,7 @@ io.on('connection', function (socket) {
         i++;
       }
     )
-    io.to(socket.currentRoom.name).emit(event.playerNumbers, playerNumbers)//send all players everyones number
+    io.to(socket.currentRoom.name).emit(event.playerNumbers, {playerNumbers:playerNumbers})//send all players everyones number
     }
   
   })
