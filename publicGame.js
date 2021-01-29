@@ -1,6 +1,7 @@
 const ServerVariables  = require("./ServerVariables").ServerVariables;
 var event = require('./events.js').events
 const rooms = require ("./rooms");
+var game= require("./game");
 
 function addPublicEvents(socket,io){
 
@@ -23,7 +24,7 @@ function addPublicEvents(socket,io){
         if (room.playerCount===data.minPlayersRequiredForGame){
     
           //p2pserver(player, null, room)    
-        io.to(room.name).emit(event.startGame, {msg: 'public room'+room.name})
+          game.startGame(socket,io)
         }      
         }
         else{

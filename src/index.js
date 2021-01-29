@@ -5,7 +5,7 @@ var event = require('../events').events
 function init () {
   var socket = io()
   
-  useP2pSocket(socket)
+  useSocket(socket)
 
    socket.on('token-offer', function(iceServers){ 
       
@@ -18,7 +18,7 @@ function init () {
     
     })
 
-    function useP2pSocket(p2psocket){
+    function useSocket(socket){
 
   
 
@@ -40,7 +40,7 @@ function init () {
   
 
 
-  p2psocket.on('peer-msg', function (data) {
+  socket.on('peer-msg', function (data) {
     var li = document.createElement('li')
     li.appendChild(document.createTextNode(data.textVal))
     msgList.appendChild(li)
@@ -48,7 +48,7 @@ function init () {
 
 
 
-  p2psocket.on(event.startGame, function (data) {
+  socket.on(event.startGame, function (data) {
     
     
     form.style.visibility='visible';
@@ -59,11 +59,7 @@ function init () {
 
 
 
-
-
-
-
-  p2psocket.on('peer-file', function (data) {
+  socket.on('peer-file', function (data) {
     var li = document.createElement('li')
     var fileBytes = new Uint8Array(data.file)
     var blob = new window.Blob([fileBytes], {type: 'image/jpeg'})
@@ -85,14 +81,14 @@ function init () {
     if (boxFile.value !== '') {
       var reader = new window.FileReader()
       reader.onload = function (evnt) {
-        p2psocket.emit('peer-file', {file: evnt.target.result})
+        socket.emit('peer-file', {file: evnt.target.result})
       }
       reader.onerror = function (err) {
         console.error('Error while reading file', err)
       }
       reader.readAsArrayBuffer(boxFile.files[0])
     } else {
-      p2psocket.emit('peer-msg', {textVal: box.value})
+      socket.emit('peer-msg', {textVal: box.value})
     }
     box.value = ''
     boxFile.value = ''
@@ -102,12 +98,12 @@ function init () {
 // Game code 
 
   gameCodeButton.addEventListener('click', function () {
-      p2psocket.emit('private-game-room-request', {numPlayersRequiredForGame:2, gameType: 'fives'})
-      //p2psocket.peerOpts.initiator=true;
+      socket.emit('private-game-room-request', {numPlayersRequiredForGame:2, gameType: 'fives'})
+      //socket.peerOpts.initiator=true;
       
   })
 
-  p2psocket.on('game-room-request-complete', function (data) {
+  socket.on('game-room-request-complete', function (data) {
     gameCodeField.textContent = data.gameRoomName
   })
 
@@ -116,7 +112,7 @@ function init () {
 
   //click join by name
   joinRoomButton.addEventListener('click', function () {
-   p2psocket.emit('join-private-game-room', {roomName: gameRoomNameInput.value })     
+   socket.emit('join-private-game-room', {roomName: gameRoomNameInput.value })     
   
 })
 
@@ -124,13 +120,13 @@ function init () {
 
 
 
-p2psocket.on('disconnected-player', function () {
+socket.on('disconnected-player', function () {
   p2pReady=false
-  p2psocket.useSockets=true
-  p2psocket.usePeerConnection = false;
+  socket.useSockets=true
+  socket.usePeerConnection = false;
 })
 
-p2psocket.on('reconnected-player', function () {
+socket.on('reconnected-player', function () {
   //send game data back so they can contiunute playing
 })
 
@@ -142,21 +138,21 @@ p2psocket.on('reconnected-player', function () {
 
   privateButton.addEventListener('click', function (e) {
     goPrivate()
-    p2psocket.emit('go-private', true)
+    socket.emit('go-private', true)
   })
 
   joinPublicButton.addEventListener('click', function (e) {
-    p2psocket.emit("public-game-room-request", {numPlayersRequiredForGame:2, gameType: 'fives'})
+    socket.emit("public-game-room-request", {numPlayersRequiredForGame:2, gameType: 'fives'})
    
   })
 
 
-  p2psocket.on('go-private', function () {
+  socket.on('go-private', function () {
    // goPrivate()
   })
 
   function goPrivate () {
-    p2psocket.useSockets = false
+    socket.useSockets = false
     upgradeMsg.innerHTML = 'WebRTC connection established!'
     privateButton.disabled = true
   }

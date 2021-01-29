@@ -5,6 +5,7 @@ var config = require('./config.js')
 var event = require('./events.js').events
 var publicGame=require("./publicGame")
 var privateGame=require("./privateGame")
+var game= require("./game");
 const rooms = require ("./rooms");
 var express = require('express')
 const { emit } = require('process')
@@ -31,7 +32,6 @@ server.listen(config.serverInfo.port, function () {
 
 
 
-
 io.on('connection', function (socket) {
   ServerVariables.clients[socket.id] = socket
   console.log("new client %s", socket.id)
@@ -47,28 +47,9 @@ io.on('connection', function (socket) {
   privateGame.addPrivateGameEvents(socket, io);
 
 
-  socket.on(event.startGame, function (data) { 
-    //p2pserver(socket, null, room)  
-    io.to(socket.currentRoom.name).emit(event.startGame)
-
-    //assign and send player numbers
-    if (socket.currentRoom){
-      var players = socket.currentRoom.players;
-      let playerNumbers = [];
-      i=0;
-      players.forEach(function (player) {
-        if(!player.playerName){//the playerName will be null if its a public game, so use socket id
-          player.playerName=player.id
-        }
-        player.playerNumber=i;
-        playerNumbers.push({playerNumber: i, playerName: player.playerName })
-        player.emit(event.playerNumber, {playerNumber: i})  // send each player there number      
-        i++;
-      }
-    )
-    io.to(socket.currentRoom.name).emit(event.playerNumbers, {playerNumbers:playerNumbers})//send all players everyones number
-    }
-  
+  socket.on(event.startGame, function (data) {  //called by private game intitatior
+   
+    game.startGame(socket,io);
   })
 
   

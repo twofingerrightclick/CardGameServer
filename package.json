@@ -50,20 +50,23 @@
     "standard": "^5.4.1",
     "tape": "~3.0.0",
     "xhr": "^2.2.0",
-    "zuul": "~3.8.0"
+    "zuul": "~3.8.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.1",
+    "sinon": "^7.5.0",
+    "faker": "^4.1.0"
   },
   "scripts": {
     "build": "browserify ./src/index.js -o ./public/bundle.js",
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "test": "mocha './tests/*.test.js'"
   },
-
-
-  
-  
-    "nodemonConfig": {
-      "ignore": ["test/*", "docs/*"],
-      "delay": "2500",
-      "verbose" : true
-    }
-  
+  "nodemonConfig": {
+    "ignore": [
+      "test/*",
+      "docs/*"
+    ],
+    "delay": "2500",
+    "verbose": true
+  }
 }
