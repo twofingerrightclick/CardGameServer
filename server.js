@@ -50,8 +50,28 @@ io.on('connection', function (socket) {
   socket.on(event.startGame, function (data) { 
     //p2pserver(socket, null, room)  
     io.to(socket.currentRoom.name).emit(event.startGame)
+
+    //assign and send player numbers
+    if (socket.currentRoom){
+      var players = socket.currentRoom.players;
+      let playerNumbers = [];
+      i=0;
+      players.forEach(function (player) {
+        if(!player.playerName){//the playerName will be null if its a public game, so use socket id
+          player.playerName=player.id
+        }
+        player.playerNumber=i;
+        playerNumbers.push({playerNumber: i, playerName: player.playerName })
+        player.emit(event.playerNumber, {playerNumber: i})  // send each player there number      
+        i++;
+      }
+    )
+    io.to(socket.currentRoom.name).emit(event.playerNumbers, playerNumbers)//send all players everyones number
+    }
   
   })
+
+  
 
 
   socket.on(event.gameData, function (data) { 
