@@ -47,13 +47,12 @@ io.on('connection', function (socket) {
   privateGame.addPrivateGameEvents(socket, io);
 
 
-  socket.on(event.startGame, function (data) {  //called by private game intitatior
+  socket.on(event.initiatorSaysToStartGame, function (data) {  //called by private game intitatior
    
     game.startGame(socket,io);
   })
 
   
-
 
   socket.on(event.gameData, function (data) { 
     

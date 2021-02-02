@@ -4,6 +4,7 @@ module.exports= {
         privategGameRoomRequestComplete: 'private-game-room-request-complete',
         
         startGame: 'start-game',
+        initiatorSaysToStartGame: 'initiator-start-game',
         joinPrivateGameRoom: 'join-private-game-room',
         gameReadyToPlay: 'game-ready-to-play',
         playerJoined: 'player-joined' ,

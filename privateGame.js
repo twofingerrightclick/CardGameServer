@@ -17,6 +17,8 @@ function addPrivateGameEvents(socket,io){
         room.players.push(socket)
     
         var minPlayersRequiredForGame=2
+
+        updatePlayerList(socket);
     
         socket.emit(event.playerJoined, {playerName: room.intitiator.playerName}) //tell the new player the intiators name 
           //p2pserver(player, null, room)      
@@ -40,12 +42,29 @@ function addPrivateGameEvents(socket,io){
         socket.join(room.name)
         room.playerCount++
         room.players.push(socket)
-        room.intitiator=socket
+        room.initiator=socket
         socket.currentRoom=room
         //p2pserver(socket, null, room)
-        socket.emit(event.privategGameRoomRequestComplete, {gameRoomName: room.name, intitiator: true})
+        socket.emit(event.privategGameRoomRequestComplete, {gameRoomName: room.name, initiator: true})
       })
 
+}
+
+
+updatePlayerList(socket){
+
+  var players = socket.currentRoom.players;
+    let playerNames = [];    
+    players.forEach(function (player) {
+      if(!player.playerName){//the playerName will be null if its a public game, so use socket id
+        player.playerName=player.id
+      }
+      
+      playerNames.push({ playerName: player.playerName, initiator: player.initiator, playerId: player.id });
+    });
+      player.emit(event.playerJoined, {playerNames: playerNames })        
+      
+    }
 }
 
 function filterPlayerName(name){
