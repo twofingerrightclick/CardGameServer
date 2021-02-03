@@ -97,8 +97,7 @@ io.on('connection', function (socket) {
       //socket.emit(event.ServerVariables.numActivePublicPlayers,{numPlayers: ServerVariables.numActivePublicPlayers})
     }
 
-    room.players.splice(room.players.indexOf(socket), 1) //remove player from room
-    
+    room.players.splice(room.players.indexOf(socket), 1) //remove player from room 
     rooms.removeRoom(room)
     io.to(room.name).emit('disconnected-player')
     }

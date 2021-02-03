@@ -15,35 +15,39 @@ function addPrivateGameEvents(socket,io){
         socket.join(room.name)
         room.playerCount++
         room.players.push(socket)
+        socket.initiator=false;
     
-        var minPlayersRequiredForGame=2
+        //var minPlayersRequiredForGame=2
 
-        updatePlayerList(socket);
+        updatePlayerList(socket,io);
     
-        socket.emit(event.playerJoined, {playerName: room.intitiator.playerName}) //tell the new player the intiators name 
+        //socket.emit(event.playerJoined, {playerName: room.initiator.playerName}) //tell the new player the intiators name 
           //p2pserver(player, null, room)      
-        io.to(room.name).emit(event.playerJoined, {playerName: socket.playerName, numPlayers: room.playerCount})
+        //io.to(room.name).emit(event.playerJoined, {playerName: socket.playerName, numPlayers: room.playerCount})
       
-        if (room.playerCount==minPlayersRequiredForGame){
-          room.intitiator.emit(event.gameReadyToPlay)
+        if (room.playerCount==room.minPlayersRequiredForGame){
+          room.initiator.emit(event.gameReadyToPlay)
       }
       }
       else socket.emit(event.unableToFindRoom)
      
       })
 
-
-
       socket.on(event.createPrivateGameRoom, function (data) {
-    
+        
+        if(!data.minNumberPlayers) data.minNumberPlayers=2; //default to 2 players
+        if(!data.maxNumberPlayers) data.maxNumberPlayers=4; //default to 4 players
+
         var room = rooms.createRoom({private:true, minPlayersRequiredForGame: data.minNumberPlayers, maxPlayersRequiredForGame: data.maxNumberPlayers, gameType:data.gameType})
         //socket.leaveAll()
+        socket.playerName=data.playerName;
         rooms.removePreviousRoom(socket)
         socket.join(room.name)
         room.playerCount++
         room.players.push(socket)
         room.initiator=socket
         socket.currentRoom=room
+        socket.initiator=true;
         //p2pserver(socket, null, room)
         socket.emit(event.privategGameRoomRequestComplete, {gameRoomName: room.name, initiator: true})
       })
@@ -51,21 +55,23 @@ function addPrivateGameEvents(socket,io){
 }
 
 
-updatePlayerList(socket){
+function updatePlayerList(socket,io){
 
   var players = socket.currentRoom.players;
+
     let playerNames = [];    
     players.forEach(function (player) {
       if(!player.playerName){//the playerName will be null if its a public game, so use socket id
         player.playerName=player.id
       }
-      
+  
       playerNames.push({ playerName: player.playerName, initiator: player.initiator, playerId: player.id });
     });
-      player.emit(event.playerJoined, {playerNames: playerNames })        
       
-    }
+    io.to(socket.currentRoom.name).emit(event.playerJoined, {playerNames: playerNames });       
+      
 }
+
 
 function filterPlayerName(name){
 
