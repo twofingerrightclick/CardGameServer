@@ -21,9 +21,9 @@ function addPrivateGameEvents(socket,io){
 
         updatePlayerList(socket,io);
     
-        //socket.emit(event.playerJoined, {playerName: room.initiator.playerName}) //tell the new player the intiators name 
+        //socket.emit(event.roomPlayerCountUpdate, {playerName: room.initiator.playerName}) //tell the new player the intiators name 
           //p2pserver(player, null, room)      
-        //io.to(room.name).emit(event.playerJoined, {playerName: socket.playerName, numPlayers: room.playerCount})
+        //io.to(room.name).emit(event.roomPlayerCountUpdate, {playerName: socket.playerName, numPlayers: room.playerCount})
       
         if (room.playerCount==room.minPlayersRequiredForGame){
           room.initiator.emit(event.gameReadyToPlay)
@@ -52,10 +52,37 @@ function addPrivateGameEvents(socket,io){
         socket.emit(event.privategGameRoomRequestComplete, {gameRoomName: room.name, initiator: true})
       })
 
+      socket.on(event.privateGameWaitingRoomPlayerLeft, function (data) {
+    
+        
+        
+        //socket.leaveAll()
+        privatePlayerDisconnecting(socket);
+        rooms.removePreviousRoom(socket);
+        
+    
+        //var minPlayersRequiredForGame=2
+
+        
+    
+        //socket.emit(event.roomPlayerCountUpdate, {playerName: room.initiator.playerName}) //tell the new player the intiators name 
+          //p2pserver(player, null, room)      
+        //io.to(room.name).emit(event.roomPlayerCountUpdate, {playerName: socket.playerName, numPlayers: room.playerCount})
+      
+        if (room.playerCount==room.minPlayersRequiredForGame){
+          room.initiator.emit(event.gameReadyToPlay)
+      }
+      
+      else socket.emit(event.unableToFindRoom)
+     
+      })
+
 }
 
 
-function updatePlayerList(socket,io){
+function updatePlayerList(socket,io,includeThisPlayerName){
+
+  if (!socket.currentRoom) return;
 
   var players = socket.currentRoom.players;
 
@@ -64,13 +91,16 @@ function updatePlayerList(socket,io){
       if(!player.playerName){//the playerName will be null if its a public game, so use socket id
         player.playerName=player.id
       }
-  
+      if(includeThisPlayerName===false){
+        if(player.playerName==socket.playerName) return; //skip iteration
+      }
       playerNames.push({ playerName: player.playerName, initiator: player.initiator, playerId: player.id });
     });
       
-    io.to(socket.currentRoom.name).emit(event.playerJoined, {playerNames: playerNames });       
+    io.to(socket.currentRoom.name).emit(event.roomPlayerCountUpdate, {playerNames: playerNames });       
       
 }
+
 
 
 function filterPlayerName(name){
@@ -85,9 +115,27 @@ function filterPlayerName(name){
 
 
 
+function privatePlayerDisconnecting(socket,io){
+    
+
+  if(socket.currentRoom.gameInSession !== true ){
+    if(socket.initiator==true){
+      io.to(socket.currentRoom).emit(event.gameRoomDeletedByInitiator);
+    }
+    updatePlayerList(socket,io,false);
+  }
+  else{
+
+    io.to(socket.currentRoom).emit(event.privatePlayerDisconnected, {playerName: socket.name});
+  }
+    
+
+}
+
 
 
     module.exports = {
         addPrivateGameEvents: addPrivateGameEvents,
+        privatePlayerDisconnecting, privatePlayerDisconnecting
         
       };

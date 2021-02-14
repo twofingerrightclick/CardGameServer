@@ -9,7 +9,7 @@ var event = require('../../events').events;
 
 
 var host ="http://10.42.0.145:3030/";
-var room_name= "bTbQ8"; //provide roomname
+var room_name= "cguH2"; //provide roomname
 
 var socket1 = io(host);
 var socket2 = io(host);
@@ -27,17 +27,20 @@ describe("Join Private Game", function() {
     it(" two players joining", function(){
         chai.assert(socket2.connected);
         chai.assert(socket1.connected);
-    socket1.emit(event.joinPrivateGameRoom, {playerName:"Alpha", room_name })
-    socket2.emit(event.joinPrivateGameRoom, {playerName:"Beta", roomName: room_name })
+        setTimeout(function(){ socket1.emit(event.joinPrivateGameRoom, {playerName:"Alpha", roomName: room_name }) },1000);
+        setTimeout(function(){ socket2.emit(event.joinPrivateGameRoom, {playerName:"Beta", roomName: room_name }) },1000);
+       
+    
     });
-
-  
-
 
     });
 
 });
 
+function joinPrivateGame(socket, playerName){
+    socket.emit(event.joinPrivateGameRoom, {playerName:playerName, roomName: room_name })
+    
+}
 
 var numTimesPlayerNumbersEvent=0;
 function init(socket, playerNumber){
@@ -53,8 +56,10 @@ function init(socket, playerNumber){
         expect(data.playerNumbers[0].playerName).to.equal(socket1.id); // this may not always be the case
         expect(data.playerNumbers[1].playerName).to.equal(socket2.id);
         numTimesPlayerNumbersEvent+=1;
-        if(numTimesPlayerNumbersEvent>1) {cleanUp([socket1,socket2]);
-            console.log("cleaning up")
+        if(numTimesPlayerNumbersEvent>1) {
+            //cleanUp([socket1,socket2]);
+            //console.log("cleaning up")
+            console.log("player numbers received")
         }
         
     })

@@ -7,10 +7,13 @@ module.exports= {
         initiatorSaysToStartGame: 'initiator-start-game',
         joinPrivateGameRoom: 'join-private-game-room',
         gameReadyToPlay: 'game-ready-to-play',
-        playerJoined: 'player-joined' ,
+        roomPlayerCountUpdate: 'room-player-count-changed' ,
         unableToFindRoom: 'unable-to-find-room',
         turnServerTokenOffer: 'token-offer',
         createPrivateGameRoom: 'private-game-room-request',
+        privateGameWaitingRoomPlayerLeft: 'private-game-waiting-room-player-left',
+        gameRoomDeletedByInitiator: 'game-room-deleted-by-initiator',
+        privatePlayerDisconnected: 'private-player-disconnected',
         //private events
         
 

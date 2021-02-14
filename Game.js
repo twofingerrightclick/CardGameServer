@@ -19,6 +19,7 @@ function startGame(socket, io){
   io.to(socket.currentRoom.name).emit(event.playerNumbers, {playerNumbers:playerNumbers})//send all players everyones number
   }
 
+  socket.currentRoom.gameInSession=true;
   //emit to everyone to start
   io.to(socket.currentRoom.name).emit(event.startGame)
 }

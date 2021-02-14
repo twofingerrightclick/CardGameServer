@@ -8,7 +8,7 @@ var io = require('socket.io-client')
 var event = require('../events').events;
 
 
-var host ="http://10.42.0.145:3030/"
+var host ="http://localhost:3030/"
 
 var socket1 = io(host);
 var socket2 = io(host);
@@ -25,19 +25,29 @@ describe("PublicGameStart", function() {
     it("socket should get a player number and its name back", function(){
         chai.assert(socket2.connected);
         chai.assert(socket1.connected);
-    socket1.emit(event.publicGameRoomRequest, {minPlayersRequiredForGame:2, gameType:"fives" })
-    socket2.emit(event.publicGameRoomRequest, {minPlayersRequiredForGame:2, gameType:"fives" })
+        setTimeout(socket1EmitPublicGameRoomRequest,1000);
+        setTimeout(socket2EmitPublicGameRoomRequest, 1000);
     });
 
     it("socket should get all player names and IDs back", function(){
-        socket1.emit(event.publicGameRoomRequest, {minPlayersRequiredForGame:2, gameType:"fives" })
-        socket2.emit(event.publicGameRoomRequest, {minPlayersRequiredForGame:2, gameType:"fives" })
+        setTimeout(socket1EmitPublicGameRoomRequest,1000);
+        setTimeout(socket2EmitPublicGameRoomRequest, 1000);
+        
         });
 
 
     });
 
 });
+
+
+function socket1EmitPublicGameRoomRequest(){
+    socket1.emit(event.publicGameRoomRequest, {minPlayersRequiredForGame:2, gameType:"fives" })
+}
+
+function socket2EmitPublicGameRoomRequest(){
+    socket2.emit(event.publicGameRoomRequest, {minPlayersRequiredForGame:2, gameType:"fives" })
+}
 
 
 var numTimesPlayerNumbersEvent=0;

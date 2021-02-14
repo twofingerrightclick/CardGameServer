@@ -42,10 +42,8 @@ function addPublicEvents(socket,io){
           ServerVariables.numActivePublicPlayers--; 
           socket.emit(event.ServerVariables.numActivePublicPlayers,{numPlayers: ServerVariables.numActivePublicPlayers})
         }
-    
-        room.players.splice(room.players.indexOf(socket), 1)
-        
-        rooms.removeRoom(room)
+        rooms.removePreviousRoom(socket)
+        //room.players.splice(room.players.indexOf(socket), 1)
         io.to(room.name).emit('disconnected-player')
         }
       })

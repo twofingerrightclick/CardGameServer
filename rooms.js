@@ -1,5 +1,5 @@
 const ServerVariables  = require("./ServerVariables").ServerVariables;
-
+var config = require('./config.js');
 
 function createRoom (data) {
     var name ='';
@@ -15,6 +15,7 @@ function createRoom (data) {
 }
 
 function generateRoomName (){
+  
   var length = 5;
   var randomChars = 'ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz023456789';
   var result = '';
@@ -59,17 +60,20 @@ function removeRoom (room) {
     if (room.playerCount === 0){ 
       ServerVariables.privateRooms.splice(indexOfRoom,1)
       ServerVariables.usedRoomNames.delete(room.name)
+     
     }
     else{
       ServerVariables.privateRooms[indexOfRoom].playerCount=room.playerCount;
     }
  
   }
+  
 
   else if (room.private === false){
     indexOfRoom= ServerVariables.publicRooms.indexOf(room)
     if (room.playerCount === 0) {
       ServerVariables.publicRooms.splice(indexOfRoom,1);
+      ServerVariables.usedRoomNames.delete(room.name);
     }
     else{
       ServerVariables.publicRooms[indexOfRoom].playerCount=room.playerCount
@@ -77,6 +81,7 @@ function removeRoom (room) {
 }
 
   else console.error(" removeRoom() Room wasn't removed as its private property wasn't set");
+  console.log("size of usedRoomnames %s", ServerVariables.usedRoomNames.size);
 }
 
 function addRoom (room) {
@@ -92,11 +97,12 @@ function addRoom (room) {
 //take the socket out of the room it was in
 function removePreviousRoom (socket) {
 
+  
   if(socket.currentRoom){
-
+    socket.leave(socket.currentRoom); //leave the room at the socket.io level (socket.io has a rooms variable)
     removeRoom(socket.currentRoom)
-
   }
+  
 
 }
 

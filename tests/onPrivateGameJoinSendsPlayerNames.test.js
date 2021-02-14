@@ -8,7 +8,7 @@ var io = require('socket.io-client')
 var event = require('../events').events;
 
 
-var host ="http://10.42.0.145:3030/"
+var host ="http://localhost:3030/"
 
 var initiatorSocket = io(host);
 var joiningPlayerSocket = io(host);
@@ -53,7 +53,7 @@ function initCreatorSocket(socket){
 
 function initJoinSocket(socket){
     
-    socket.on(event.playerJoined, function (data) {
+    socket.on(event.roomPlayerCountUpdate, function (data) {
         console.log('playerJoined event for joinsocket ')
 
         playerNames= data.playerNames;
