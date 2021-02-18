@@ -17,7 +17,7 @@ function createRoom (data) {
 function generateRoomName (){
   
   var length = 5;
-  var randomChars = 'ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz023456789';
+  var randomChars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz023456789';
   var result = '';
   for ( var i = 0; i < length; i++ ) {
       result += randomChars.charAt(Math.floor(Math.random() * randomChars.length));

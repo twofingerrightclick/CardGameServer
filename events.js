@@ -1,7 +1,7 @@
 module.exports= {
 
     events: {
-        privategGameRoomRequestComplete: 'private-game-room-request-complete',
+        privateGameRoomRequestComplete: 'private-game-room-request-complete',
         
         startGame: 'start-game',
         initiatorSaysToStartGame: 'initiator-start-game',

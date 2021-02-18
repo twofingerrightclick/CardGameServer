@@ -21,9 +21,7 @@ function addPrivateGameEvents(socket,io){
 
         updatePlayerList(socket,io);
     
-        //socket.emit(event.roomPlayerCountUpdate, {playerName: room.initiator.playerName}) //tell the new player the intiators name 
-          //p2pserver(player, null, room)      
-        //io.to(room.name).emit(event.roomPlayerCountUpdate, {playerName: socket.playerName, numPlayers: room.playerCount})
+        socket.emit(event.privateGameRoomRequestComplete, {gameRoomName: room.name, initiator: false})
       
         if (room.playerCount==room.minPlayersRequiredForGame){
           room.initiator.emit(event.gameReadyToPlay)
@@ -49,33 +47,10 @@ function addPrivateGameEvents(socket,io){
         socket.currentRoom=room
         socket.initiator=true;
         //p2pserver(socket, null, room)
-        socket.emit(event.privategGameRoomRequestComplete, {gameRoomName: room.name, initiator: true})
+        socket.emit(event.privateGameRoomRequestComplete, {gameRoomName: room.name, initiator: true})
       })
 
-      socket.on(event.privateGameWaitingRoomPlayerLeft, function (data) {
     
-        
-        
-        //socket.leaveAll()
-        privatePlayerDisconnecting(socket);
-        rooms.removePreviousRoom(socket);
-        
-    
-        //var minPlayersRequiredForGame=2
-
-        
-    
-        //socket.emit(event.roomPlayerCountUpdate, {playerName: room.initiator.playerName}) //tell the new player the intiators name 
-          //p2pserver(player, null, room)      
-        //io.to(room.name).emit(event.roomPlayerCountUpdate, {playerName: socket.playerName, numPlayers: room.playerCount})
-      
-        if (room.playerCount==room.minPlayersRequiredForGame){
-          room.initiator.emit(event.gameReadyToPlay)
-      }
-      
-      else socket.emit(event.unableToFindRoom)
-     
-      })
 
 }
 

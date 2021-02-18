@@ -9,7 +9,7 @@ var event = require('../../events').events;
 
 
 var host ="http://10.42.0.145:3030/";
-var room_name= "cguH2"; //provide roomname
+var room_name= "yRywn"; //provide roomname
 
 var socket1 = io(host);
 var socket2 = io(host);
@@ -27,7 +27,7 @@ describe("Join Private Game", function() {
     it(" two players joining", function(){
         chai.assert(socket2.connected);
         chai.assert(socket1.connected);
-        setTimeout(function(){ socket1.emit(event.joinPrivateGameRoom, {playerName:"Alpha", roomName: room_name }) },1000);
+        setTimeout(function(){ socket1.emit(event.joinPrivateGameRoom, {playerName:"Alpha", roomName: room_name }) },4000);
         setTimeout(function(){ socket2.emit(event.joinPrivateGameRoom, {playerName:"Beta", roomName: room_name }) },1000);
        
     
@@ -45,22 +45,25 @@ function joinPrivateGame(socket, playerName){
 var numTimesPlayerNumbersEvent=0;
 function init(socket, playerNumber){
     
-    socket.on(event.privategGameRoomRequestComplete, function (data) {
+    socket.on(event.privateGameRoomRequestComplete, function (data) {
         console.log('gameRoom request complete ')
-       
-             
-    })
-
-    socket.on(event.playerNumbers, function (data) {
-        console.log('player numbers')
-        expect(data.playerNumbers[0].playerName).to.equal(socket1.id); // this may not always be the case
-        expect(data.playerNumbers[1].playerName).to.equal(socket2.id);
         numTimesPlayerNumbersEvent+=1;
         if(numTimesPlayerNumbersEvent>1) {
-            //cleanUp([socket1,socket2]);
-            //console.log("cleaning up")
-            console.log("player numbers received")
+            
+            console.log("cleaning up")
+            cleanUp([socket1,socket2]);
+            
         }
+    })
+
+    socket.on(event.roomPlayerCountUpdate, function (data) {
+        console.log('player names: %s', data.playerNames)
+        
+        //expect(data.playerNumbers[0].playerName).to.equal(socket1.id); // this may not always be the case
+        //expect(data.playerNumbers[1].playerName).to.equal(socket2.id);
+       
+        console.log(numTimesPlayerNumbersEvent)
+        
         
     })
 
@@ -69,6 +72,6 @@ function init(socket, playerNumber){
 function cleanUp(sockets){
 
     sockets.forEach(socket => {
-        socket.disconnect();
+        setTimeout(function(){socket.disconnect()},5000);
     });
     }
