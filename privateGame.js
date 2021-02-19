@@ -19,7 +19,7 @@ function addPrivateGameEvents(socket,io){
     
         //var minPlayersRequiredForGame=2
 
-        updatePlayerList(socket,io);
+        updatePlayerList(socket,io,true);
     
         socket.emit(event.privateGameRoomRequestComplete, {gameRoomName: room.name, initiator: false})
       
@@ -48,6 +48,10 @@ function addPrivateGameEvents(socket,io){
         socket.initiator=true;
         //p2pserver(socket, null, room)
         socket.emit(event.privateGameRoomRequestComplete, {gameRoomName: room.name, initiator: true})
+      })
+
+      socket.on(event.playerListRequest, function (data) {
+        updatePlayerList(socket,io,true);
       })
 
     
@@ -95,13 +99,13 @@ function privatePlayerDisconnecting(socket,io){
 
   if(socket.currentRoom.gameInSession !== true ){
     if(socket.initiator==true){
-      io.to(socket.currentRoom).emit(event.gameRoomDeletedByInitiator);
+      io.to(socket.currentRoom.name).emit(event.gameRoomDeletedByInitiator, {p: "" });
     }
     updatePlayerList(socket,io,false);
   }
   else{
 
-    io.to(socket.currentRoom).emit(event.privatePlayerDisconnected, {playerName: socket.name});
+    io.to(socket.currentRoom.name).emit(event.privatePlayerDisconnected, {playerName: socket.name});
   }
     
 

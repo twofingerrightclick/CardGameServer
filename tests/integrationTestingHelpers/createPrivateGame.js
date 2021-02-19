@@ -9,28 +9,28 @@ var event = require('../../events').events;
 
 
 var host ="http://10.42.0.145:3030/";
-var room_name= "MGkty"; //provide roomname
+//var room_name= "9MqJx"; //provide roomname
 
 var socket1 = io(host);
-var socket2 = io(host);
+//var socket2 = io(host);
 
 
-describe("Join Private Game", function() {
+describe("Create Private Game", function() {
 
     
  
     
-    describe("join to sockets to the same private game", function() {
+    describe("socket requesting private game", function() {
     init(socket1,0);
-    init(socket2,1);
+    //init(socket2,1);
 
-    it(" two players joining", function(){
-        chai.assert(socket2.connected);
+    it("socket request game", function(){
+        //chai.assert(socket2.connected);
         chai.assert(socket1.connected);
-        setTimeout(function(){ socket1.emit(event.joinPrivateGameRoom, {playerName:"Alpha", roomName: room_name }) },4000);
-        setTimeout(function(){ socket2.emit(event.joinPrivateGameRoom, {playerName:"Beta", roomName: room_name }) },1000);
+        setTimeout(function(){ socket1.emit(event.createPrivateGameRoom, {playerName:"Steve", minPlayersRequiredForGame: 2,maxPlayersRequiredForGame: 6, gameType : "fives" }) },4000);
+        //setTimeout(function(){ socket2.emit(event.joinPrivateGameRoom, {playerName:"Beta", roomName: room_name }) },1000);
        
-    
+        
     });
 
     });
@@ -47,11 +47,12 @@ function init(socket, playerNumber){
     
     socket.on(event.privateGameRoomRequestComplete, function (data) {
         console.log('gameRoom request complete ')
+        console.log(data.gameRoomName);
         numTimesPlayerNumbersEvent+=1;
         if(numTimesPlayerNumbersEvent>1) {
             
             console.log("cleaning up")
-            cleanUp([socket1,socket2]);
+            //cleanUp([socket1,socket2]);
             
         }
     })

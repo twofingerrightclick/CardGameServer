@@ -15,7 +15,7 @@ module.exports= {
         gameRoomDeletedByInitiator: 'game-room-deleted-by-initiator',
         privatePlayerDisconnected: 'private-player-disconnected',
         //private events
-        
+        playerListRequest: 'player-list-request',
 
 
         //public game events
