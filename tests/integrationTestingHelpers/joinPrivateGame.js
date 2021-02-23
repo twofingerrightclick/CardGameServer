@@ -9,7 +9,7 @@ var event = require('../../events').events;
 
 
 var host ="http://10.42.0.145:3030/";
-var room_name= "MGkty"; //provide roomname
+var room_name= "VQc7U"; //provide roomname
 
 var socket1 = io(host);
 var socket2 = io(host);
@@ -25,9 +25,9 @@ describe("Join Private Game", function() {
     init(socket2,1);
 
     it(" two players joining", function(){
-        chai.assert(socket2.connected);
-        chai.assert(socket1.connected);
-        setTimeout(function(){ socket1.emit(event.joinPrivateGameRoom, {playerName:"Alpha", roomName: room_name }) },4000);
+        setTimeout(function(){chai.assert(socket2.connected)},100);
+        setTimeout(function(){ chai.assert(socket1.connected)},100);
+        setTimeout(function(){ socket1.emit(event.joinPrivateGameRoom, {playerName:"Alpha", roomName: room_name }) },2000);
         setTimeout(function(){ socket2.emit(event.joinPrivateGameRoom, {playerName:"Beta", roomName: room_name }) },1000);
        
     
@@ -72,6 +72,6 @@ function init(socket, playerNumber){
 function cleanUp(sockets){
 
     sockets.forEach(socket => {
-        setTimeout(function(){socket.disconnect()},5000);
+        setTimeout(function(){socket.disconnect()},10000);
     });
     }

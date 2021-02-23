@@ -39,8 +39,8 @@ function addPublicEvents(socket,io){
         if (typeof socket.currentRoom !== 'undefined'){
         var room = socket.currentRoom
         if(!room.private){
-          ServerVariables.numActivePublicPlayers--; 
-          socket.emit(event.ServerVariables.numActivePublicPlayers,{numPlayers: ServerVariables.numActivePublicPlayers})
+          ServerVariables.numActivePublicPlayers--;
+          socket.emit(event.numActivePublicPlayers,{numPlayers: ServerVariables.numActivePublicPlayers})
         }
         rooms.removePreviousRoom(socket)
         //room.players.splice(room.players.indexOf(socket), 1)

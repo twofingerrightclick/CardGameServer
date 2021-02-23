@@ -118,10 +118,20 @@ io.on('connection', function (socket) {
 
   
 
-
 })
 
+function emitSocketBasicEvent(socket, event, data){
+ // player.emit(event.gameData, data)
+}
 
+function ioSocketBasicEvent(io, event, data){
+  //io.emit(event.gameData, data)
+}
+
+module.exports = {
+  emitSocketBasicEvent: emitSocketBasicEvent,
+  ioSocketBasicEvent: ioSocketBasicEvent
+};
 
 
 

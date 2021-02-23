@@ -26,7 +26,7 @@ describe("Create Private Game", function() {
 
     it("socket request game", function(){
         //chai.assert(socket2.connected);
-        chai.assert(socket1.connected);
+        setTimeout(function(){chai.assert(socket1.connected)},100);
         setTimeout(function(){ socket1.emit(event.createPrivateGameRoom, {playerName:"Steve", minPlayersRequiredForGame: 2,maxPlayersRequiredForGame: 6, gameType : "fives" }) },4000);
         //setTimeout(function(){ socket2.emit(event.joinPrivateGameRoom, {playerName:"Beta", roomName: room_name }) },1000);
        
