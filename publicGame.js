@@ -34,24 +34,53 @@ function addPublicEvents(socket,io){
       })
       
 
-      socket.on(event.publicGameWaitingRoomPlayerLeft, function (data) { //when a user presses the back button in the waiting room
-        //remove room and room name from set.
-        if (typeof socket.currentRoom !== 'undefined'){
-        var room = socket.currentRoom
-        if(!room.private){
-          ServerVariables.numActivePublicPlayers--;
-          socket.emit(event.numActivePublicPlayers,{numPlayers: ServerVariables.numActivePublicPlayers})
-        }
-        rooms.removePreviousRoom(socket)
-        //room.players.splice(room.players.indexOf(socket), 1)
-        io.to(room.name).emit('disconnected-player')
-        }
-      })
+     
 
+}
+
+
+function updatePlayerList(socket,io,includeThisPlayerName){
+
+  if (!socket.currentRoom) return;
+
+  var players = socket.currentRoom.players;
+
+    let playerNames = [];    
+    players.forEach(function (player) {
+      if(!player.playerName){//the playerName will be null if its a public game, so use socket id
+        player.playerName=player.id
+      }
+      if(includeThisPlayerName===false){
+        if(player.playerName==socket.playerName) return; //skip iteration
+      }
+      playerNames.push({ playerName: player.playerName, playerId: player.id });
+    });
+      
+    io.to(socket.currentRoom.name).emit(event.roomPlayerCountUpdate, {playerNames: playerNames });       
+      
+}
+
+
+
+function publicPlayerDisconnecting(socket,io){
+  
+  ServerVariables.numActivePublicPlayers--;
+
+
+  if(socket.currentRoom.gameInSession !== true ){
+    
+    updatePlayerList(socket,io,false);
+  }
+  else{
+
+    io.to(socket.currentRoom.name).emit(event.publicPlayerDisconnected, {playerName: socket.name});
+  }
+    
 
 }
 
 module.exports = {
     addPublicEvents: addPublicEvents,
+    publicPlayerDisconnecting: publicPlayerDisconnecting,
     
   };

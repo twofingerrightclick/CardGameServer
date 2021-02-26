@@ -1,7 +1,14 @@
 {
     "appService.zipIgnorePattern": [
         "node_modules{,/**}",
+        ".git{,/**}",
+        ".gitignore",
+        "tests{,/**}",
+        "package-lock.json",
+        "Dockerfile",
+        "public{,/**}",
         ".vscode{,/**}"
     ],
-    "appService.deploySubpath": "."
+    "appService.deploySubpath": ".",
+    "appService.defaultWebAppToDeploy": ""
 }

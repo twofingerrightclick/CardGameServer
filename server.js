@@ -101,13 +101,14 @@ io.on('connection', function (socket) {
     }
     //socket.leave(room); //socket.io socket itself has a rooms variable. leave will manage that variable
     if(room.private===false){
-      ServerVariables.numActivePublicPlayers--; 
+      publicGame.publicPlayerDisconnecting(socket,io)
       //io.emit(event.numActivePublicPlayers,{numPlayers: ServerVariables.numActivePublicPlayers})
     }
 
+    //remove rooms
     room.players.splice(room.players.indexOf(socket), 1) //remove player from room 
     rooms.removeRoom(room)
-    io.to(room.name).emit('disconnected-player')
+    
     }
   })
 

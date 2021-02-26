@@ -25,6 +25,7 @@ module.exports= {
         publicGameReadyToPlay : "public-game-ready-to-play",
         getNumActivePlayers : "get-num-active-public-players",
         numActivePublicPlayers : "num-active-public-players",
+        publicPlayerDisconnected: "public-player-disconnected",
 
 
         //game events
