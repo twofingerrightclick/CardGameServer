@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function (data) {
    
-    leaveRoomAndNotifyOthers(socket,io)
+    rooms.leaveRoomAndNotifyOthers(socket,io)
   })
 
  socket.on("disconnecting", function (data) {
@@ -102,7 +102,7 @@ io.on('connection', function (socket) {
 
  socket.on('leave-room', function (data) {
   
-  leaveRoomAndNotifyOthers(socket,io)
+  rooms.leaveRoomAndNotifyOthers(socket,io)
   
 })
 
