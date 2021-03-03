@@ -35,6 +35,7 @@ server.listen(config.serverInfo.port, function () {
 io.on('connection', function (socket) {
   ServerVariables.clients[socket.id] = socket
   console.log("new client %s", socket.id)
+  console.log("number public players %s", ServerVariables.numActivePublicPlayers)
   //socket.emit('token-offer', twilioClient.tokens.create().then(token => console.log(token.iceServers)))
   
   //for p2p
@@ -89,33 +90,21 @@ io.on('connection', function (socket) {
   })
 
   socket.on('disconnect', function (data) {
-    //remove room and room name from set.
-    if (typeof socket.currentRoom !== 'undefined'){
-    var room = socket.currentRoom
-
-    if(socket.currentRoom){
-      if(socket.currentRoom.private===true)
-      {
-        privateGame.privatePlayerDisconnecting(socket,io)
-      }
-    }
-    //socket.leave(room); //socket.io socket itself has a rooms variable. leave will manage that variable
-    if(room.private===false){
-      publicGame.publicPlayerDisconnecting(socket,io)
-      //io.emit(event.numActivePublicPlayers,{numPlayers: ServerVariables.numActivePublicPlayers})
-    }
-
-    //remove rooms
-    room.players.splice(room.players.indexOf(socket), 1) //remove player from room 
-    rooms.removeRoom(room)
-    
-    }
+   
+    leaveRoomAndNotifyOthers(socket,io)
   })
 
  socket.on("disconnecting", function (data) {
    
 
  })
+
+
+ socket.on('leave-room', function (data) {
+  
+  leaveRoomAndNotifyOthers(socket,io)
+  
+})
 
   
 

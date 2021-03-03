@@ -1,5 +1,7 @@
 const ServerVariables  = require("./ServerVariables").ServerVariables;
 var config = require('./config.js');
+var publicGame=require("./publicGame")
+var privateGame=require("./privateGame")
 
 function createRoom (data) {
     var name ='';
@@ -27,7 +29,7 @@ function generateRoomName (){
 
 function findPublicRoom (requiredNumPlayers, gameType) {
   if(gameType && requiredNumPlayers){
-  var availiblePublicRoom = ServerVariables.publicRooms.filter(function(room) { return (room.playerCount < requiredNumPlayers && room.gameType==gameType)})[0];
+  var availiblePublicRoom = ServerVariables.publicRooms.filter(function(room) { return (room.playerCount < requiredNumPlayers && room.gameType==gameType && room.minPlayersRequiredForGame==requiredNumPlayers)})[0];
   if(availiblePublicRoom){
     return availiblePublicRoom
   }
@@ -107,10 +109,37 @@ function removePreviousRoom (socket) {
 }
 
 
+function leaveRoomAndNotifyOthers(socket, io){
+
+  if (typeof socket.currentRoom !== 'undefined'){
+    var room = socket.currentRoom
+  
+    if(socket.currentRoom){
+      if(socket.currentRoom.private===true)
+      {
+        privateGame.privatePlayerDisconnecting(socket,io)
+      }
+    }
+    //socket.leave(room); //socket.io socket itself has a rooms variable. leave will manage that variable
+    if(room.private===false){
+      publicGame.publicPlayerDisconnecting(socket,io)
+      //io.emit(event.numActivePublicPlayers,{numPlayers: ServerVariables.numActivePublicPlayers})
+    }
+  
+    //remove rooms
+    room.players.splice(room.players.indexOf(socket), 1) //remove player from room 
+    rooms.removeRoom(room)
+    
+    }
+
+}
+
+
 module.exports = {
   findPublicRoom: findPublicRoom,
   findPrivateRoom: findPrivateRoom,
   removePreviousRoom: removePreviousRoom,
   createRoom: createRoom,
-  removeRoom: removeRoom
+  removeRoom: removeRoom,
+  leaveRoomAndNotifyOthers: leaveRoomAndNotifyOthers
 };
