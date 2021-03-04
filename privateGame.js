@@ -103,10 +103,11 @@ function privatePlayerDisconnecting(socket,io){
     }
     updatePlayerList(socket,io,false);
   }
-  else{
 
-    io.to(socket.currentRoom.name).emit(event.privatePlayerDisconnected, {playerName: socket.name});
+  else{
+    io.to(socket.currentRoom.name).emit(event.playerDisconnected, {playerName: socket.name});
   }
+  
     
 
 }

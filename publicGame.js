@@ -72,10 +72,10 @@ function publicPlayerDisconnecting(socket,io){
     
     updatePlayerList(socket,io,false);
   }
-  else{
 
-    io.to(socket.currentRoom.name).emit(event.publicPlayerDisconnected, {playerName: socket.name});
-  }
+else{
+  io.to(socket.currentRoom.name).emit(event.playerDisconnected, {playerName: socket.name});
+}
     
 
 }

@@ -14,6 +14,8 @@ module.exports= {
         privateGameWaitingRoomPlayerLeft: 'private-game-waiting-room-player-left',
         gameRoomDeletedByInitiator: 'game-room-deleted-by-initiator',
         privatePlayerDisconnected: 'private-player-disconnected',
+        playerDisconnected: 'player-disconnected',
+
         //private events
         playerListRequest: 'player-list-request',
 

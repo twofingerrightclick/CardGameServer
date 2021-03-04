@@ -103,11 +103,9 @@ io.on('connection', function (socket) {
  })
 
 
- socket.on('leave-room', function (data) {
-  
-  rooms.leaveRoomAndNotifyOthers(socket,io,privateGame,publicGame)
-  
-})
+// socket.on('leave-room', function (data) {
+//   rooms.leaveRoomAndNotifyOthers(socket,io,privateGame,publicGame) 
+//})
 
 
 socket.on('player-ready', function (data) {
