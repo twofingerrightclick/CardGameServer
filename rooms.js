@@ -28,7 +28,10 @@ function generateRoomName (){
 
 function findPublicRoom (requiredNumPlayers, gameType) {
   if(gameType && requiredNumPlayers){
-  var availiblePublicRoom = ServerVariables.publicRooms.filter(function(room) { return (room.playerCount < requiredNumPlayers && room.gameType==gameType && room.minPlayersRequiredForGame==requiredNumPlayers)})[0];
+  var availiblePublicRoom = ServerVariables.publicRooms.filter(function(room) { return (room.gameInSession!==true 
+    && room.playerCount < requiredNumPlayers 
+    && room.gameType==gameType 
+    && room.minPlayersRequiredForGame==requiredNumPlayers)})[0];
   if(availiblePublicRoom){
     return availiblePublicRoom
   }

@@ -51,12 +51,14 @@ function socket2EmitPublicGameRoomRequest(){
 
 
 var numTimesPlayerNumbersEvent=0;
+
 function init(socket, playerNumber){
-    
+    socket.playerNumber=playerNumber
+
     socket.on(event.playerNumber, function (data) {
         console.log('%s player number %s', data.playerName,data.playerNumber)
-        expect(data.playerNumber).to.equal(playerNumber);
-        expect(data.playerName).to.equal(socket.id);
+        expect(data.playerNumber).to.equal(socket.playerNumber);
+        //expect(data.playerName).to.equal(socket.id);
              
     })
 
@@ -64,6 +66,10 @@ function init(socket, playerNumber){
         console.log('player numbers')
         expect(data.playerNumbers[0].playerName).to.equal(socket1.id); // this may not always be the case
         expect(data.playerNumbers[1].playerName).to.equal(socket2.id);
+
+        expect(data.playerNumbers[0].playerNumber).to.equal(socket1.playerNumber); // this may not always be the case
+        expect(data.playerNumbers[1].playerNumber).to.equal(socket2.playerNumber);
+
         numTimesPlayerNumbersEvent+=1;
         if(numTimesPlayerNumbersEvent>1) {cleanUp([socket1,socket2]);
             console.log("cleaning up")
