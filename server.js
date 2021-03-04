@@ -50,7 +50,10 @@ io.on('connection', function (socket) {
 
   socket.on(event.initiatorSaysToStartGame, function (data) {  //called by private game intitatior
    
-    game.startGame(socket,io);
+    //game.startGame(socket,io);
+
+    io.to(socket.currentRoom.name).emit(event.getReady)
+
   })
 
   
@@ -103,6 +106,16 @@ io.on('connection', function (socket) {
  socket.on('leave-room', function (data) {
   
   rooms.leaveRoomAndNotifyOthers(socket,io,privateGame,publicGame)
+  
+})
+
+
+socket.on('player-ready', function (data) {
+  
+  socket.currentRoom.numberPlayersReady++;
+  if(socket.currentRoom.numberPlayersReady===socket.currentRoom.playerCount){
+  game.startGame(socket,io);
+  }
   
 })
 

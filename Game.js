@@ -24,6 +24,10 @@ function startGame(socket, io){
   io.to(socket.currentRoom.name).emit(event.startGame)
 }
 
+
+
+
+
 module.exports = {
   startGame
   

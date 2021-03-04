@@ -31,7 +31,8 @@ module.exports= {
         //game events
         gameData: 'game-data',
         playerNumbers: 'player_numbers',
-        playerNumber: 'player_number'
+        playerNumber: 'player_number',
+        getReady:'get-ready',
     }    
 
 }

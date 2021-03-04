@@ -9,7 +9,7 @@ function createRoom (data) {
   } while (ServerVariables.usedRoomNames.has(name))
   ServerVariables.usedRoomNames.add(name);
 
-    var room = {players: [], playerCount: 0, name: name, private: data.private, gameType: data.gameType, minPlayersRequiredForGame:data.minPlayersRequiredForGame, maxPlayersRequiredForGame:data.maxPlayersRequiredForGame}
+    var room = {players: [], playerCount: 0, name: name, private: data.private, gameType: data.gameType, minPlayersRequiredForGame:data.minPlayersRequiredForGame, maxPlayersRequiredForGame:data.maxPlayersRequiredForGame, numberPlayersReady:0}
     addRoom(room)
   
   return room;

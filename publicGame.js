@@ -25,7 +25,7 @@ function addPublicEvents(socket,io){
         if (room.playerCount===data.minPlayersRequiredForGame){
     
           //p2pserver(player, null, room)    
-          game.startGame(socket,io)
+          io.to(socket.currentRoom.name).emit(event.getReady);
         }      
         }
         else{
