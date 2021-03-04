@@ -114,7 +114,7 @@ function privatePlayerDisconnecting(socket,io){
 
 
     module.exports = {
-        addPrivateGameEvents: addPrivateGameEvents,
-        privatePlayerDisconnecting, privatePlayerDisconnecting
+         addPrivateGameEvents,
+        privatePlayerDisconnecting
         
       };

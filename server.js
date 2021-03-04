@@ -3,8 +3,8 @@ var hat = require('hat')
 const ServerVariables  = require("./ServerVariables").ServerVariables;
 var config = require('./config.js')
 var event = require('./events.js').events
-var publicGame=require("./publicGame")
-var privateGame=require("./privateGame")
+const publicGame=require("./publicGame")
+const privateGame=require("./privateGame")
 var game= require("./game");
 const rooms = require ("./rooms");
 var express = require('express')
@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function (data) {
    
-    rooms.leaveRoomAndNotifyOthers(socket,io)
+    rooms.leaveRoomAndNotifyOthers(socket,io,privateGame,publicGame)
   })
 
  socket.on("disconnecting", function (data) {
@@ -102,7 +102,7 @@ io.on('connection', function (socket) {
 
  socket.on('leave-room', function (data) {
   
-  rooms.leaveRoomAndNotifyOthers(socket,io)
+  rooms.leaveRoomAndNotifyOthers(socket,io,privateGame,publicGame)
   
 })
 
@@ -119,8 +119,9 @@ function ioSocketBasicEvent(io, event, data){
 }
 
 module.exports = {
-  emitSocketBasicEvent: emitSocketBasicEvent,
-  ioSocketBasicEvent: ioSocketBasicEvent
+  emitSocketBasicEvent,
+   ioSocketBasicEvent,
+
 };
 
 

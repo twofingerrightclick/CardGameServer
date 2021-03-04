@@ -25,6 +25,6 @@ function startGame(socket, io){
 }
 
 module.exports = {
-  startGame: startGame,
+  startGame
   
 };

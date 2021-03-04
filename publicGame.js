@@ -80,7 +80,6 @@ function publicPlayerDisconnecting(socket,io){
 }
 
 module.exports = {
-    addPublicEvents: addPublicEvents,
-    publicPlayerDisconnecting: publicPlayerDisconnecting,
-    
+    publicPlayerDisconnecting,
+    addPublicEvents 
   };

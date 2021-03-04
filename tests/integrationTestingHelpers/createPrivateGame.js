@@ -8,7 +8,7 @@ var io = require('socket.io-client')
 var event = require('../../events').events;
 
 
-var host ="http://10.42.0.145:3030/";
+var host ="http://localhost:3030/";
 //var room_name= "9MqJx"; //provide roomname
 
 var socket1 = io(host);
