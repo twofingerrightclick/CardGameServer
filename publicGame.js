@@ -21,6 +21,7 @@ function addPublicEvents(socket,io){
        
         socket.emit(event.publicGameRoomRequestComplete, {gameRoomName: room.name})
         //p2pserver(socket, null, room)  
+        updatePlayerList(socket,io,true)
         if (room.playerCount===data.minPlayersRequiredForGame){
     
           //p2pserver(player, null, room)    
