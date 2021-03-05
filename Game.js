@@ -12,7 +12,7 @@ function startGame(socket, io){
       }
       player.playerNumber=i;
       playerNumbers.push({playerNumber: i, playerName: player.playerName })
-      player.emit(event.playerNumber, {playerNumber: i, playerName: player.playerName })  // send each player their number      
+      player.emit(event.playerNumber, {playerNumber: i, playerName: player.playerName, numberOfPlayersInRoom: socket.currentRoom.playerCount })  // send each player their number      
       i++;
     }
   )
