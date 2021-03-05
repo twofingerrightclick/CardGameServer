@@ -108,7 +108,7 @@ io.on('connection', function (socket) {
 //})
 
 
-socket.on('player-ready', function (data) {
+socket.on('player-ready-for-game-data', function (data) {
   
   socket.currentRoom.numberPlayersReady++;
   if(socket.currentRoom.numberPlayersReady===socket.currentRoom.playerCount){
