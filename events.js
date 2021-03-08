@@ -32,6 +32,7 @@ module.exports= {
 
         //game events
         gameData: 'game-data',
+        gameDataAll: 'game-data-all',
         playerNumbers: 'player_numbers',
         playerNumber: 'player_number',
         getReady:'get-ready',

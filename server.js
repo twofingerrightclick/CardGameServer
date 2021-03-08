@@ -49,9 +49,7 @@ io.on('connection', function (socket) {
 
 
   socket.on(event.initiatorSaysToStartGame, function (data) {  //called by private game intitatior
-   
     //game.startGame(socket,io);
-
     io.to(socket.currentRoom.name).emit(event.getReady)
 
   })
@@ -65,6 +63,18 @@ io.on('connection', function (socket) {
       var players = socket.currentRoom.players.filter(function (player) {
         return player !== socket
       })
+      players.forEach(function (player) {
+        player.emit(event.gameData, data)
+      })
+    }
+  })
+
+
+  socket.on(event.gameDataAll, function (data) { 
+    
+    //send to other players
+    if (socket.currentRoom){
+      var players = socket.currentRoom.players;
       players.forEach(function (player) {
         player.emit(event.gameData, data)
       })
