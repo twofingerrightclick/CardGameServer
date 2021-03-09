@@ -25,7 +25,6 @@ module.exports= {
         publicGameWaitingRoomPlayerLeft:'public-game-waiting-room-player-left',
         publicGameRoomRequest : "public-game-room-request",
         publicGameReadyToPlay : "public-game-ready-to-play",
-        getNumActivePlayers : "get-num-active-public-players",
         numActivePublicPlayers : "num-active-public-players",
         publicPlayerDisconnected: "public-player-disconnected",
 

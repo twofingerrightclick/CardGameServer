@@ -8,10 +8,11 @@ function addPublicEvents(socket,io){
     socket.on('public-game-room-request', function (data) {
     
         var room = rooms.findPublicRoom(data.minPlayersRequiredForGame, data.gameType)
+        socket.playerName=filterPlayerName(data.playerName)
         //socket.leaveAll()
         if(room){
         ServerVariables.numActivePublicPlayers++;
-        socket.emit(event.numActivePublicPlayers, {numPlayers: ServerVariables.numActivePublicPlayers})//emit to everyone before joining a room
+       
         rooms.removePreviousRoom(socket)
         socket.join(room.name)
         room.playerCount++
@@ -35,7 +36,12 @@ function addPublicEvents(socket,io){
       })
       
 
-     
+  socket.on(event.numActivePublicPlayers, function (data) {
+
+        socket.emit(event.numActivePublicPlayers, {numPlayers: ServerVariables.numActivePublicPlayers});
+        console.log("NumActivePlayers")
+
+  });
 
 }
 
@@ -48,7 +54,7 @@ function updatePlayerList(socket,io,includeThisPlayerName){
 
     let playerNames = [];    
     players.forEach(function (player) {
-      if(!player.playerName){//the playerName will be null if its a public game, so use socket id
+      if(!player.playerName){//if the playerName is null use socket id
         player.playerName=player.id
       }
       if(includeThisPlayerName===false){
@@ -77,8 +83,19 @@ else{
   io.to(socket.currentRoom.name).emit(event.playerDisconnected, {playerName: socket.name});
 }
     
+}
+
+
+function filterPlayerName(name){
+
+  if(name){
+  if(name.length>13) return name.substr(0,13)
+  }
+  
+  return name
 
 }
+
 
 module.exports = {
     publicPlayerDisconnecting,

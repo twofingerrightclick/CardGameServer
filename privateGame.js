@@ -105,7 +105,7 @@ function privatePlayerDisconnecting(socket,io){
   }
 
   else{
-    io.to(socket.currentRoom.name).emit(event.playerDisconnected, {playerName: socket.name});
+    io.to(socket.currentRoom.name).emit(event.playerDisconnected, {playerName: socket.playerName});
   }
   
     
